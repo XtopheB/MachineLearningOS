@@ -1,6 +1,6 @@
 ---
 title: "Statistical Learning"
-subtitle: ""
+subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
 author: 
   - Christophe Bontemps & Patrick Jonsson - SIAP
 output:
@@ -28,6 +28,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r Knitr_Global_Options, include=FALSE, cache=FALSE}
 library(knitr)
+
 opts_chunk$set(warning = FALSE, message = FALSE, 
                autodep = TRUE, tidy = FALSE, cache = TRUE)
 #opts_chunk$set(cache.rebuild=TRUE) 
@@ -41,48 +42,15 @@ SIAP.color <- "#0385a8"
 
 
 # Introduction
-This course is designed for current or future *data scientists* working in an NSO, or in any statistical office. 
-
-> **Data Scientist**: "Person who is **better** at statistics than any software engineer and **better** at software than any statistician." (J. Wills)
+This file serves as support for the "*Workshop on Machine Learning for Official Statistics in Asia-Pacific*"  
 
 
-The term *machine learning* is used because the computer (more accurately the algorithm) figures out the model from the data. There are many related words: statistical learning, big data, nonparametric estimation, AI, high-dimensional models, ...
-
+The term *machine learning* is used because the computer (more accurately the algorithm) figures out the model from the data. 
 In fact there are **two main learning problems:**
- 
-1.  When we observe both the outcome **y** and regressors (also called *features*) **x** the analysis is called *Supervised learning*. This is in fact a regression type of model with two possible  denominations
-  - Regression: y is continuous
-  - Classification: y is categorical
-
-
-2. When we do not observe **y** but only several **x** the analysis is called  *Unsupervised learning*
-This is also called *Cluster Analysis*: e.g. determine five types of consumers given many socio-economic  measures.
-
-
-## Tasks
-
-Data science involves several tasks, some of them can take a lot of time in the professionnal life of a data scientist.
-
-- Data collection: usually done beforehand, so you don't have to do it yourself
-- Data organization: when you get data in several formats, from several sources, ...
-- Data cleaning: removing duplicates, spotting missing data and errors, ...
-- Data visualization
-- Data analysis
-
 
 ## Tools
-
-- R and the *caret* package https://topepo.github.io/caret/index.html.
+We will use several packages, in particular the *caret* package https://topepo.github.io/caret/index.html.
 Caret can deal with 238 "models": we are going to use some of them. 
-
-- We are not going to use Python, but *Scikit-Learn* and *PyCaret* are two main tools in Python
-- There are interfaces to call Python from inside R, the  *reticulate* package allows to do this from inside a Markdown document.
-
-
-- If you work in data science, you will have to keep up to date. The internet is a good source, with sites such as 
-https://www.kdnuggets.com/ and https://towardsdatascience.com/
-Look at https://www.kaggle.com/ for competitions and solutions posted by participants. 
-
 
 ## Let's start with an example
 
@@ -104,6 +72,7 @@ https://www.economics.utoronto.ca/yatchew/ ].
 ```{r cache=TRUE}
 # We load the data from the "Data" folder where we store raw data
 SouthAfrica <-read.csv2("./SouthAfrica.csv")
+
 # ltexp is expenditure in log
 # The variables "zij" are dummies for families with "i" adults and "j" kids.
 ```
@@ -129,7 +98,7 @@ hist(ltexp,prob=T,breaks=50,
      main = "Histogram of log(expenses)",
      sub = "Red curve is the density (estimated)",
      xlab = "log(expenses)" ,
-     col = SIAP.color, border = "white")
+     col = "grey", border = "white")
 lines(density(ltexp,na.rm = TRUE),lwd=2,col = "darkred")
 ```
 
@@ -145,9 +114,9 @@ lines(density(FoodShr,na.rm = TRUE),lwd=2,col = "darkred")
 ```
 
 
-### Plot
+### Visualizing in 2-D
 
-This is the plot of our observations.
+This is the scatterplot of our observations.
 
 ```{r M0-Scatter }
 plot(FoodShr~ltexp, main="Scatter plot of Food Share vs Log(exp)", 
@@ -173,8 +142,15 @@ $$ y = f(x) + \varepsilon$$
 Let's begin with a simple linear model.
 $$y = x'\beta + \varepsilon$$
 
-```{r }
+```{r include=FALSE}
+# Defining the regression of Y:  FoodShr on X:  ltexp
 lmFood <- lm(FoodShr~ltexp)
+summary(lmFood)
+```
+
+
+```{r }
+# Printing the results in a nice format
 library(xtable)
 library(kableExtra)
 xtable(summary(lmFood)) %>%
@@ -182,9 +158,10 @@ xtable(summary(lmFood)) %>%
   kable_styling()
 ```
 
-Here is the estimated regression line. Note how it is constructed in practice.
+Visualizing the estimated regression line. Note how it is constructed in practice.
 
 ```{r M0-Scatter-lm}
+# First we plot the scatterplot 
 plot(ltexp, FoodShr, type="n",
      main="Linear regression", 
      xlab="Log(Exp)", ylab = "FoodShare",
@@ -325,6 +302,32 @@ effect_plot(lmFood2, data = Singles,
             plot.points = TRUE, pch = ".",
             point.size = 1)
 ```
+# Same code with Tidyverse
+
+```{r}
+library(tidyverse)
+
+# Fit the model
+lmFood2 <- lm(FoodShr ~ poly(ltexp, degree = 2, raw = TRUE), data = Singles)
+
+# Create predictions with confidence intervals
+predictions <- Singles %>%
+  mutate(pred = predict(lmFood2, newdata = Singles, interval = "confidence")) %>%
+  bind_cols(as.data.frame(predict(lmFood2, newdata = Singles, interval = "confidence")))
+
+# Plot with ggplot2
+ggplot(Singles, aes(x = ltexp, y = FoodShr)) +
+  geom_point(color = "grey", size = 1, alpha = 0.5) +  # Scatter plot
+  geom_line(aes(y = predictions$fit), color = "blue", size = 0.7) +  # Regression line
+  geom_ribbon(aes(ymin = predictions$lwr, ymax = predictions$upr), 
+              fill = "blue", alpha = 0.2) +  # Confidence interval
+  labs(title = "Polynomial Regression with Confidence Interval",
+       x = "Log(Exp)", y = "FoodShare") +
+  theme_minimal()
+
+```
+
+
 
 
 ```{r}
