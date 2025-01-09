@@ -1,0 +1,175 @@
+---
+title: "Machine Learning for Official Statistics and SDG Indicators "
+author: "Your Name (Your Institution)"
+subtitle: '*A simple report*'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: true
+    code_folding: hide
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: no
+---
+
+
+
+```{r libraries, include = FALSE}
+# Load the required libraries
+
+# For manipulating data
+library(tidyverse)
+
+# For tables display
+library(flextable)
+
+```
+
+
+```{r setup, include=FALSE}
+# Set echo=FALSE as default for code cells
+# The code folding for HTLM output is thus deactivated
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+
+# Data analysis
+We provide here some basic elements about the data set and descriptive statistics on some variables of interest.  
+
+* First we load the data
+* second we print a summary
+
+```{r echo =FALSE}
+TradeData <- read.csv("https://www.unsiap.or.jp/on_line/2024/RAP/Data/TradeData.csv")
+```
+
+We loaded the data set and compile the  report on `r Sys.Date()`
+
+## Summary statistics
+Here are some summary statistics of the export value (*Stat_Value* variable), all products combined:
+
+```{r }
+summary(TradeData$Stat_Value)
+```
+
+The data set contains   **`r  nrow(TradeData)`  observations**, and  **`r  ncol(TradeData)`** variables.
+
+Here is a list of all variables available in the data set: 
+
+```{r}
+names(TradeData)
+```
+
+## Type of exports
+
+The variable *Principle_Export* list all the types of goods exported from Vanuatu. There are **`r length(unique(TradeData$Principle_Exports))`** different goods exported. Let's have the list of all these goods. 
+
+```{r}
+unique(TradeData$Principle_Exports)
+
+```
+
+# Main Exports by type of goods
+
+## As a table
+It could be nicer to have this as a table:
+
+```{r  }
+# Calculate total value by principle export type
+ExportsByType <- TradeData %>%
+  group_by(Principle_Exports) %>%
+  summarise(total = sum(Stat_Value)) %>%
+  arrange(desc(total))
+
+```
+
+
+
+```{r}
+# Table display
+# Needs package "flextable"
+
+# Printing the table
+flextable(ExportsByType)
+```
+
+# As a graphic: 
+
+Since we have a limited number of goods, a bar chart would probably describe the data in a very good way. We follow here some good practices in terms of data visualization: 
+
+- The bar chart is **horizontal** to facilitate the reading of the labels for each good
+- The bar chart is **ordered** to follow the data (largest on top)
+
+```{r }
+# Plot the exports
+ExportsByType  %>%
+  ggplot()+
+  aes(x = reorder(Principle_Exports, total), y = (total)) +
+  geom_bar(stat = "identity", 
+             fill= "lightsteelblue1") +
+  labs(title ="Exports from Vanuatu ", 
+       subtitle = "Years [ 2000-2010]", 
+       caption  = paste("Source: NSO, (file date: ",Sys.Date(), ")"), 
+       x= "Exports categories",
+       y = "Value (Vatu)") +
+  coord_flip() +
+  theme_minimal()
+
+```
+
+# Some extensions on this dynamic report
+
+##  Selection of the Year
+
+The previous analysis was done for all years. Imagine now the same report but for any year in [2000, 2010]. let's pick a year in the code chunck below! 
+
+```{r}
+MyYear <- 2003
+```
+
+> we have now selected the year **`r MyYear`**, let's see the ***new*** report!
+
+### As a table
+
+We use the same table as before. Maybe that could be a function later ;-).
+
+```{r  }
+# Now only for a specific year
+ExportsByType_Year <- TradeData %>%
+  filter(Year == MyYear) %>%
+  group_by(Principle_Exports) %>%
+  summarise(total = sum(Stat_Value)) %>%
+  arrange(desc(total))
+
+```
+
+
+```{r}
+flextable(ExportsByType_Year)
+```
+
+
+As expected, the graphic shows the difference with the 
+
+```{r }
+# Plot the exports for the specific year
+ExportsByType_Year  %>%
+  ggplot(aes(x = reorder(Principle_Exports, total), y = (total))) +  
+    geom_bar(stat = "identity", color="white", fill= "lightsteelblue1") +
+      labs( x= "Exports categories", 
+            y = "Value (Vatu)", 
+            title = paste("Exports from Vanuatu"),
+            subtitle = paste(" Selected year:", MyYear), 
+            caption  = paste("Source: NSO, (file date: ",Sys.Date(), ")"), ) +
+  coord_flip() +
+  theme_minimal()
+
+```
+
+
+
+
+
