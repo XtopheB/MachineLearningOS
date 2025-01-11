@@ -4,17 +4,17 @@ subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
 author: 
   - Christophe Bontemps & Patrick Jonsson - SIAP
 output:
-  pdf_document:
-    df_print: kable
-    toc: yes
-    keep_tex: yes
-    fig_width: 6.5
-    fig_height: 4
   html_document:
     df_print: paged
     toc: yes
     keep_md: yes
     code_folding: show
+    fig_width: 6.5
+    fig_height: 4
+  pdf_document:
+    df_print: kable
+    toc: yes
+    keep_tex: yes
     fig_width: 6.5
     fig_height: 4
 ---
@@ -71,7 +71,7 @@ https://www.economics.utoronto.ca/yatchew/ ].
 
 ```{r cache=TRUE}
 # We load the data from the "Data" folder where we store raw data
-SouthAfrica <-read.csv2("./SouthAfrica.csv")
+SouthAfrica <-read.csv2("https://www.unsiap.or.jp/on_line/2025/MLO/SouthAfrica.csv")
 
 # ltexp is expenditure in log
 # The variables "zij" are dummies for families with "i" adults and "j" kids.
