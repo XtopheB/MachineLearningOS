@@ -40,17 +40,22 @@ SIAP.color <- "#0385a8"
 
 `r if(knitr:::pandoc_to() == "latex") {paste("\\large")}` 
 
+## Tools
+We will use several packages, in particular the *caret* package https://topepo.github.io/caret/index.html.
+Caret can deal with 238 "models": we are going to use some of them. 
+
+Here is the list of packages we will use: 
+
+```{r}
+library(tidyverse)
+library(caret)
+
+```
 
 # Introduction
 This file serves as support for the "*Workshop on Machine Learning for Official Statistics in Asia-Pacific*"  
 
-
-The term *machine learning* is used because the computer (more accurately the algorithm) figures out the model from the data. 
-In fact there are **two main learning problems:**
-
-## Tools
-We will use several packages, in particular the *caret* package https://topepo.github.io/caret/index.html.
-Caret can deal with 238 "models": we are going to use some of them. 
+The term *machine learning* is used because the computer (more accurately the algorithm) figures out the model from the data and will then predict with accuracy. On the other hand,  *statistical learning* is mostly used to test whether a model fits the data and to showcase the relationships between variables. 
 
 ## Let's start with an example
 
@@ -63,33 +68,38 @@ One specific feature is that in most cases the data is  "big":
 
 > In the course, we will deal with "not so big" data for practical purposes
 
-
 ### Data
 
 We will begin by a look at consumption data and focus on relations between **total expenses** of a household and the **share of a good** in total consumption. Here we will study food share in SouthAfrica^[Data from A. Yatchew *Semiparametric  Regression for the Applied Econometrician*
 https://www.economics.utoronto.ca/yatchew/ ].
 
 ```{r cache=TRUE}
-# We load the data from the "Data" folder where we store raw data
+# We load the data from the SIAP's server
 SouthAfrica <-read.csv2("https://www.unsiap.or.jp/on_line/2025/MLO/SouthAfrica.csv")
-
-# ltexp is expenditure in log
-# The variables "zij" are dummies for families with "i" adults and "j" kids.
 ```
+In this data set there are **`r nrow(SouthAfrica)`** observations and  **`r ncol(SouthAfrica)`** variables. The most important are: 
 
+  - `ltexp` is expenditure in log
+  - `FoodShr` is the food share of the household
+  - The variables $z_{ij}$ are dummies for families with "i" adults and "j" kids.
+ 
 Now we select **only singles** households and reorder according to expenditure variable.
 
 ```{r }
 Singles <- SouthAfrica[SouthAfrica$z10==1,4:5]  
 #Singles Subset
-Singles <- Singles[order(Singles$ltexp),1:2]	 
+Singles <- Singles[order(Singles$ltexp),1:2]
+```
+
+```{r }
 #Reorder so that log expenditure is in increasing order
 FoodShr <- Singles$FoodShr 
 ltexp   <- Singles$ltexp
 MyData <- data.frame(FoodShr,ltexp)
 ```
 
-### Histograms and Densities
+The data set of interest is now `MyData` and has  **`r nrow(MyData)`** observations and  **`r ncol(MyData)`** variables.
+### Descriptive statistics
 
 Let's first look at the data.
 
@@ -305,7 +315,7 @@ effect_plot(lmFood2, data = Singles,
 # Same code with Tidyverse
 
 ```{r}
-library(tidyverse)
+
 
 # Fit the model
 lmFood2 <- lm(FoodShr ~ poly(ltexp, degree = 2, raw = TRUE), data = Singles)
@@ -382,11 +392,11 @@ lines(density(lmFood2.res,na.rm = TRUE),lwd=2,col = "darkred")
 ## Comparing the residuals distribution
 
 ```{r}
-library(ggplot2)
 
 res.all <- as.data.frame(cbind(lmFood.res, lmFood2.res, lmFood3.res))
+
 boxplot(res.all, ylim = c(-0.5, 0.5),outline=FALSE,   
-        frame.plot = FALSE, horizontal = TRUE,
+        frame.plot = FALSE, horizontal = FALSE,
         names = c("Lm", "Quadratic", "Cubic") )
 
 ```
