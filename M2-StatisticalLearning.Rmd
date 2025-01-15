@@ -1,22 +1,24 @@
 ---
 title: "Statistical Learning"
+author: "Christophe Bontemps & Patrick Jonsson - SIAP"
 subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
-author: 
-  - Christophe Bontemps & Patrick Jonsson - SIAP
 output:
+  pdf_document:
+    df_print: kable
+    toc: true
+    keep_tex: true
+    fig_width: 6.5
+    fig_height: 4
   html_document:
     df_print: paged
-    toc: yes
-    keep_md: yes
+    toc: true
+    keep_md: true
     code_folding: show
     fig_width: 6.5
     fig_height: 4
-  pdf_document:
-    df_print: kable
-    toc: yes
-    keep_tex: yes
-    fig_width: 6.5
-    fig_height: 4
+  word_document:
+    toc: true
+always_allow_html: true
 ---
 
 
@@ -41,14 +43,16 @@ SIAP.color <- "#0385a8"
 `r if(knitr:::pandoc_to() == "latex") {paste("\\large")}` 
 
 ## Tools
-We will use several packages, in particular the *caret* package https://topepo.github.io/caret/index.html.
-Caret can deal with 238 "models": we are going to use some of them. 
 
-Here is the list of packages we will use: 
+We will use several packages to make our lives easier. Here is the list of packages we will use: 
 
 ```{r}
+# For easy computing
 library(tidyverse)
-library(caret)
+
+# Pretty tables
+library(broom)
+library(kableExtra)
 
 ```
 
@@ -57,7 +61,7 @@ This file serves as support for the "*Workshop on Machine Learning for Official 
 
 The term *machine learning* is used because the computer (more accurately the algorithm) figures out the model from the data and will then predict with accuracy. On the other hand,  *statistical learning* is mostly used to test whether a model fits the data and to showcase the relationships between variables. 
 
-## Let's start with an example
+> Let's start with an example
 
 One specific feature is that in most cases the data is  "big":
 
@@ -68,7 +72,7 @@ One specific feature is that in most cases the data is  "big":
 
 > In the course, we will deal with "not so big" data for practical purposes
 
-### Data
+## Data
 
 We will begin by a look at consumption data and focus on relations between **total expenses** of a household and the **share of a good** in total consumption. Here we will study food share in SouthAfrica^[Data from A. Yatchew *Semiparametric  Regression for the Applied Econometrician*
 https://www.economics.utoronto.ca/yatchew/ ].
@@ -99,7 +103,8 @@ MyData <- data.frame(FoodShr,ltexp)
 ```
 
 The data set of interest is now `MyData` and has  **`r nrow(MyData)`** observations and  **`r ncol(MyData)`** variables.
-### Descriptive statistics
+
+## Descriptive statistics
 
 Let's first look at the data.
 
@@ -124,7 +129,7 @@ lines(density(FoodShr,na.rm = TRUE),lwd=2,col = "darkred")
 ```
 
 
-### Visualizing in 2-D
+## Visualizing relationships
 
 This is the scatterplot of our observations.
 
@@ -137,8 +142,9 @@ plot(FoodShr~ltexp, main="Scatter plot of Food Share vs Log(exp)",
 
 # Exporing the relationships: It is all about $f(\cdot)$
 
-We may be interested in the relation between $y$ = Food Share  and $x$ = log(Expenses) and thus in the expression 
+We may be interested in the relation between  Food Share (*FoodShr*)  and Expenses (*ltexp*) and thus in the expression 
 $$ y = f(x) + \varepsilon$$
+where $y$ = *FoodShr* and $x$ = *ltexp*
 
 > In essence, statistical learning refers to a set of approaches for estimating $f(\cdot)$
 
@@ -158,15 +164,17 @@ lmFood <- lm(FoodShr~ltexp)
 summary(lmFood)
 ```
 
+```{r}
+# We use the package boroom and function tidy (broom::tidy) to have results printed nicely 
 
-```{r }
-# Printing the results in a nice format
-library(xtable)
-library(kableExtra)
-xtable(summary(lmFood)) %>%
-  kable(digits=2) %>%
-  kable_styling()
+tidy(lmFood) %>%
+  kable(digits = 2, format = "simple", caption = "Regression Summary")
 ```
+
+```{r}
+# knitr::knit_exit() 
+```
+
 
 Visualizing the estimated regression line. Note how it is constructed in practice.
 
