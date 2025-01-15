@@ -3,17 +3,18 @@ title: "Statistical Learning"
 author: "Christophe Bontemps & Patrick Jonsson - SIAP"
 subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
 output:
-  pdf_document:
-    df_print: kable
-    toc: true
-    keep_tex: true
-    fig_width: 6.5
-    fig_height: 4
   html_document:
     df_print: paged
     toc: true
     keep_md: true
     code_folding: show
+    toc_float: true
+    fig_width: 6.5
+    fig_height: 4
+  pdf_document:
+    df_print: kable
+    toc: true
+    keep_tex: true
     fig_width: 6.5
     fig_height: 4
   word_document:
@@ -157,13 +158,18 @@ where $y$ = *FoodShr* and $x$ = *ltexp*
 
 Let's begin with a simple linear model.
 $$y = x'\beta + \varepsilon$$
-
-```{r include=FALSE}
+ When we run a linear model, we have an output like this: 
+ 
+```{r }
 # Defining the regression of Y:  FoodShr on X:  ltexp
 lmFood <- lm(FoodShr~ltexp)
-summary(lmFood)
+print(summary(lmFood))
 ```
 
+
+ But we can focus on the main relations and coefficients of the regression 
+ $$ FooShr =  \beta_o +\beta1 * ltexp + \varepsilon$$
+ 
 ```{r}
 # We use the package boroom and function tidy (broom::tidy) to have results printed nicely 
 
@@ -171,32 +177,52 @@ tidy(lmFood) %>%
   kable(digits = 2, format = "simple", caption = "Regression Summary")
 ```
 
-```{r}
-# knitr::knit_exit() 
-```
-
+## Regression model
 
 Visualizing the estimated regression line. Note how it is constructed in practice.
 
-```{r M0-Scatter-lm}
-# First we plot the scatterplot 
-plot(ltexp, FoodShr, type="n",
-     main="Linear regression", 
-     xlab="Log(Exp)", ylab = "FoodShare",
-    pch=19, cex = 0.5,col = "grey", frame.plot = FALSE )
-points(ltexp,FoodShr,
-    pch=19, cex = 0.5,col = "grey" )
 
-lmFood <- lm(FoodShr ~ poly(ltexp, degree=1,raw=TRUE))
-newx <- seq(from=min(ltexp),to=max(ltexp),
-            length.out = 200)
+```{r Scatter-lm}
+# Fit the linear model
+lmFood <- lm(FoodShr ~ ltexp, data = Singles)
 
-lines(newx, predict(lmFood, data.frame(ltexp = newx)), 
-      col = "blue")
+# Create predictions with confidence intervals
+lmpredictions <- Singles %>%
+  mutate(pred = predict(lmFood, newdata = Singles)) 
+
+# Plot with ggplot2
+ggplot(Singles, aes(x = ltexp, y = FoodShr)) +
+  geom_point(color = "grey", size = 1, alpha = 0.5) +  # Scatter plot
+  geom_line(aes(y = lmpredictions$pred), color = "blue", size = 0.7) +  # Regression line
+  labs(title = "Regression on the data set",
+       x = "Log(Exp)", y = "FoodShare") +
+  theme_minimal()
+
+```
+We can also have a confidence interval around the linear regression
+
+```{r Scatter-lm-conf}
+# Fit the linear model
+lmFood <- lm(FoodShr ~ ltexp, data = Singles)
+
+# Create predictions with confidence intervals
+lmpredconf <- Singles %>%
+  mutate(pred = predict(lmFood, newdata = Singles, interval = "confidence")) %>%
+  bind_cols(as.data.frame(predict(lmFood, newdata = Singles, interval = "confidence")))
+
+# Plot with ggplot2
+ggplot(Singles, aes(x = ltexp, y = FoodShr)) +
+  geom_point(color = "grey", size = 1, alpha = 0.5) +  # Scatter plot
+  geom_line(aes(y = lmpredconf$fit), color = "blue", size = 0.7) +  # Regression line
+  geom_ribbon(aes(ymin = lmpredconf$lwr, ymax = lmpredconf$upr), 
+              fill = "blue", alpha = 0.2) +  # Confidence interval
+  labs(title = "Regression with Confidence Interval",
+       x = "Log(Exp)", y = "FoodShare") +
+  theme_minimal()
+
 ```
 
-
-> How is this line computed? 
+## How is this regression line computed? 
 
 You may recall that the regression is obtained by trying to find the line defined by the equation $\beta_0 + \beta_1 x$ that *fits* the data and *minimize the vertical distance between a point and the estimated line*. In other words,  we are looking for  $\beta_0$ and $\beta_1$, the *parameters* of the line, such that the sum of all distances for all points is minimized. The vertical distance of any $y_i$ to the line for a particular point $i$ is simply:
 
@@ -247,6 +273,12 @@ is **minimal**.
 In this case when $f(\cdot)$ is linear, an analytical solution exist (the equation can be written explicitly). 
 
 
+
+```{r include=FALSE}
+# knitr::knit_exit() 
+```
+
+
 ### Goodness of fit: $R^2$
 
 We can compute one of the favorite measures of adjustment: the **$R^2$** that measures how close the data are to the fitted regression line. We use the sum of squared distances of the observations $Y_i$ to the regression line, or *residual sum of squares* ($RSS$), as compared to the  *total sum of the squares* ($TSS$,  measured as  the sum of the distances of the observations $Y_i$ to their mean. So:
@@ -278,30 +310,21 @@ lines(density(lmFood.res,na.rm = TRUE),lwd=2,col = "darkred")
 ```
 
 
-The *jtools* package allows to simply obtain a similar plot, with confidence interval around the regression line.
-
-```{r M0-Scatter-lmCI}
-library(jtools)
-effect_plot(lmFood, data = Singles,
-            pred = ltexp, 
-            interval = TRUE, robust = "HC1",
-            colors = "blue", line.thickness = 0.7,
-            plot.points = TRUE, pch = ".",
-            point.size = 1)
-```
-
-
 ## Polynomial Models
 
 We can try to have a better model by introducing some non linearity. This can be done using polynomials of the unique regressor $x$. Here we define a polynomial model of order 2, or *quadratic model*:
 
 $$y = \beta_0 + \beta_1 x +  \beta_2 x^2+ \varepsilon$$.
 
-```{r }
-lmFood2 <- lm(FoodShr ~ poly(ltexp, degree=2,raw=TRUE))
-summ(lmFood2, robust = "HC1")$coeftable %>%
-  kable(digits=2) %>%
-  kable_styling()
+```{r}
+# Fit the model
+lmFood2 <- lm(FoodShr ~ poly(ltexp, degree = 2, raw = TRUE), data = Singles)
+```
+
+Examining the results
+```{r}
+tidy(lmFood2) %>%
+  kable(digits = 2, format = "simple", caption = "Polynomial Regression Summary")
 ```
 
 Let us see if the adjustment, in terms of the $R^2$ has been better: 
@@ -310,34 +333,17 @@ Let us see if the adjustment, in terms of the $R^2$ has been better:
 summary(lmFood2)$adj.r.squared
 ```
 
-
-
-```{r M0-Scatter-poly2}
-effect_plot(lmFood2, data = Singles,
-            pred = ltexp, 
-            interval = TRUE, robust = "HC1",
-            colors = "blue", line.thickness = 0.7,
-            plot.points = TRUE, pch = ".",
-            point.size = 1)
-```
-# Same code with Tidyverse
-
 ```{r}
-
-
-# Fit the model
-lmFood2 <- lm(FoodShr ~ poly(ltexp, degree = 2, raw = TRUE), data = Singles)
-
 # Create predictions with confidence intervals
-predictions <- Singles %>%
+predictions2 <- Singles %>%
   mutate(pred = predict(lmFood2, newdata = Singles, interval = "confidence")) %>%
   bind_cols(as.data.frame(predict(lmFood2, newdata = Singles, interval = "confidence")))
 
 # Plot with ggplot2
 ggplot(Singles, aes(x = ltexp, y = FoodShr)) +
   geom_point(color = "grey", size = 1, alpha = 0.5) +  # Scatter plot
-  geom_line(aes(y = predictions$fit), color = "blue", size = 0.7) +  # Regression line
-  geom_ribbon(aes(ymin = predictions$lwr, ymax = predictions$upr), 
+  geom_line(aes(y = predictions2$fit), color = "blue", size = 0.7) +  # Regression line
+  geom_ribbon(aes(ymin = predictions2$lwr, ymax = predictions2$upr), 
               fill = "blue", alpha = 0.2) +  # Confidence interval
   labs(title = "Polynomial Regression with Confidence Interval",
        x = "Log(Exp)", y = "FoodShare") +
@@ -349,8 +355,10 @@ ggplot(Singles, aes(x = ltexp, y = FoodShr)) +
 
 
 ```{r}
+# Gathering residual values
 lmFood2.res = resid(lmFood2)
-# We now plot the residual against the observed values of the variable FoodShr.
+
+# We now plot the residuals at the observed values of the variable FoodShr.
 hist(lmFood2.res,prob=T,breaks=50, 
      main = "Histogram of the residuals (Quadratic model)",
      sub = "Red curve is the density (estimated)",
@@ -361,13 +369,14 @@ lines(density(lmFood2.res,na.rm = TRUE),lwd=2,col = "darkred")
 ```
 
 #### Let's try with more degrees in our polynomial model (*Cubic model*):
+
 $$y = \beta_0 + \beta_1 x +  \beta_2 x^2+ \beta_3 x^3 + \varepsilon $$.
 
 ```{r }
 lmFood3 <- lm(FoodShr ~ poly(ltexp, degree=3,raw=TRUE))
-summ(lmFood3, robust = "HC1")$coeftable %>%
-  kable(digits=2) %>%
-  kable_styling()
+
+tidy(lmFood3) %>%
+  kable(digits = 2, format = "simple", caption = "Cubic Polynomila Regression Summary")
 ```
 
 
@@ -386,7 +395,9 @@ effect_plot(lmFood3, data = Singles,
 
 
 ```{r}
+# Gathering residual values
 lmFood3.res = resid(lmFood3)
+
 # We now plot the residual against the observed values of the variable FoodShr.
 hist(lmFood3.res,prob=T,breaks=50, 
      main = "Histogram of the residuals (Cubic model)",
@@ -400,16 +411,33 @@ lines(density(lmFood2.res,na.rm = TRUE),lwd=2,col = "darkred")
 ## Comparing the residuals distribution
 
 ```{r}
-
+# Gathering all residuals
 res.all <- as.data.frame(cbind(lmFood.res, lmFood2.res, lmFood3.res))
 
-boxplot(res.all, ylim = c(-0.5, 0.5),outline=FALSE,   
-        frame.plot = FALSE, horizontal = FALSE,
-        names = c("Lm", "Quadratic", "Cubic") )
+# Ploting residuals 
+boxplot(res.all, 
+        ylim = c(-0.5, 0.5),
+       # outline=FALSE,   
+        frame.plot = FALSE,
+        horizontal = FALSE,
+        col = SIAP.color,
+        names = c("Linear", "Quadratic", "Cubic") )
 
 ```
 
-> Trying to find the "right" model, that is the right order of the polynomial function is not so easy. 
+
+# Takeaways
+- Trying to find the "right" model - that is the right order of the polynomial function - is not so easy. 
+- To estimate regression models, we have to solve an **optimization problem**
+- With "big data", we can go over a simple linear models like polynomial models (or nonparametric mode such as *k-NN* regression).
+- We need "**good criteria** to decide what is the best model
+
+
+```{r include=FALSE}
+knitr::knit_exit()
+```
+
+
 
 ## Nonparametric models
 ### Nearest-Neighbors (k-NN)
