@@ -48,10 +48,8 @@ SIAP.color <- "#0385a8"
 We will use several packages to make our lives easier. Here is the list of packages we will use: 
 
 ```{r}
-# For easy computing
+# Data Science packages
 library(tidyverse)
-
-# Statistical packages
 library(jtools)
 
 # Pretty tables
