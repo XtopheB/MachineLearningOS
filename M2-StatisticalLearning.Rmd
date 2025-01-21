@@ -3,14 +3,6 @@ title: "Statistical Learning"
 author: "Christophe Bontemps & Patrick Jonsson - SIAP"
 subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
 output:
-  html_document:
-    df_print: paged
-    toc: true
-    keep_md: true
-    code_folding: show
-    toc_float: true
-    fig_width: 6.5
-    fig_height: 4
   pdf_document:
     df_print: kable
     toc: true
@@ -19,6 +11,14 @@ output:
     fig_height: 4
   word_document:
     toc: true
+  html_document:
+    df_print: paged
+    toc: true
+    keep_md: true
+    code_folding: show
+    toc_float: true
+    fig_width: 6.5
+    fig_height: 4
 always_allow_html: true
 ---
 
@@ -51,18 +51,23 @@ We will use several packages to make our lives easier. Here is the list of packa
 # For easy computing
 library(tidyverse)
 
+# Statistical packages
+library(jtools)
+
 # Pretty tables
 library(broom)
+library(xtable)
 library(kableExtra)
 
 ```
 
 # Introduction
-This file serves as support for the "*Workshop on Machine Learning for Official Statistics in Asia-Pacific*"  
+This file serves as support for the "*Workshop on Machine Learning for Official Statistics in Asia-Pacific*"  and showcase a typical work stream in Data Science.   
 
-The term *machine learning* is used because the computer (more accurately the algorithm) figures out the model from the data and will then predict with accuracy. On the other hand,  *statistical learning* is mostly used to test whether a model fits the data and to showcase the relationships between variables. 
 
-> Let's start with an example
+The term *machine learning* is used because the computer (more accurately the algorithm) figures out the model from the data and will then predict with accuracy. On the other hand,  *statistical learning* is mostly used to test whether a model fits the data and to highlight relationships between variables. 
+
+> Let's start with a Data Science example
 
 One specific feature is that in most cases the data is  "big":
 
@@ -384,13 +389,23 @@ tidy(lmFood3) %>%
 summary(lmFood3)$adj.r.squared
 ```
 
-```{r M0-Scatter-poly3}
-effect_plot(lmFood3, data = Singles,
-            pred = ltexp, 
-            interval = TRUE, robust = "HC1",
-            colors = "blue", line.thickness = 0.7,
-            plot.points = TRUE, pch = ".",
-            point.size = 1)
+
+```{r}
+# Create predictions with confidence intervals
+predictions3 <- Singles %>%
+  mutate(pred = predict(lmFood3, newdata = Singles, interval = "confidence")) %>%
+  bind_cols(as.data.frame(predict(lmFood3, newdata = Singles, interval = "confidence")))
+
+# Plot with ggplot2
+ggplot(Singles, aes(x = ltexp, y = FoodShr)) +
+  geom_point(color = "grey", size = 1, alpha = 0.5) +  # Scatter plot
+  geom_line(aes(y = predictions3$fit), color = "blue", size = 0.7) +  # Regression line
+  geom_ribbon(aes(ymin = predictions3$lwr, ymax = predictions3$upr), 
+              fill = "blue", alpha = 0.2) +  # Confidence interval
+  labs(title = " Cubic Polynomial Regression with Confidence Interval",
+       x = "Log(Exp)", y = "FoodShare") +
+  theme_minimal()
+
 ```
 
 
@@ -416,6 +431,8 @@ res.all <- as.data.frame(cbind(lmFood.res, lmFood2.res, lmFood3.res))
 
 # Ploting residuals 
 boxplot(res.all, 
+        ylab ="Residuals", 
+        xlab = "Models",
         ylim = c(-0.5, 0.5),
        # outline=FALSE,   
         frame.plot = FALSE,
@@ -427,10 +444,12 @@ boxplot(res.all,
 
 
 # Takeaways
-- Trying to find the "right" model - that is the right order of the polynomial function - is not so easy. 
-- To estimate regression models, we have to solve an **optimization problem**
+- This is how Data Science works!
+- Data Science requires to **test different models**, rerun code several times
+- Finding the "best model" depends on **which criterion** is used. This is not so easy. 
+- To estimate regression models, we have used **all observations** in the data set. They may be other options ;-).
 - With "big data", we can go over a simple linear models like polynomial models (or nonparametric mode such as *k-NN* regression).
-- We need "**good criteria** to decide what is the best model
+- Any "**good criterion**  will depend on the final goal: Inference (like here) or prediction (like in Machine Learning).
 
 
 ```{r include=FALSE}
