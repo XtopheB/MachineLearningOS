@@ -1,5 +1,5 @@
 ---
-title: 'Machine Learning in Practice: Decision Trees'
+title:  "Decision Trees"
 author: "Christophe Bontemps & Patrick Jonsson - SIAP^[*This document uses teaching
   materials developped by Pascal Lavergne* (*Toulouse School of Economics*)]"
 subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
