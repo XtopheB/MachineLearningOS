@@ -18,16 +18,19 @@
 /*.Rcheck/
 # RStudio files
 .Rproj.user/
+*.Rproj
 # Output
 *.html
 *.pdf
 *.md
 *.tex
 *.docx
-
+*.toc
+*.synctex
 # knitr and R markdown default cache directories
 *_cache/
 /cache/
+*_files/
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
@@ -43,3 +46,4 @@ docs/
 po/*~
 # RStudio Connect folder
 rsconnect/
+Rpackages
