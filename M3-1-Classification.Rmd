@@ -1,16 +1,9 @@
 ---
-title: "Simple Supervized Classification"
+title: "Supervized Classification"
 author: "Christophe Bontemps & Patrick Jonsson - SIAP^[*This document uses teaching
   materials developped by Pascal Lavergne* (*Toulouse School of Economics*)]"
 subtitle: Some concepts
 output:
-  pdf_document:
-    df_print: kable
-    toc: true
-    keep_tex: true
-    fig_width: 6.5
-    fig_height: 4
-    extra_dependencies: float
   html_document:
     df_print: paged
     toc: true
@@ -18,6 +11,13 @@ output:
     code_folding: show
     fig_width: 6.5
     fig_height: 4
+  pdf_document:
+    df_print: kable
+    toc: true
+    keep_tex: true
+    fig_width: 6.5
+    fig_height: 4
+    extra_dependencies: float
   word_document:
     toc: true
 always_allow_html: true
@@ -25,17 +25,24 @@ always_allow_html: true
 
 
 ```{r setup, include=FALSE}
+library(knitr)
+# Chunk option to toggle output on/off
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
 ```{r Knitr_Global_Options, include=FALSE, cache=FALSE}
-library(knitr)
+# Global options for document rendering
 opts_chunk$set(warning = FALSE, message = FALSE, 
                fig.pos = "!H", fig.align = "center",
                autodep = TRUE, tidy = FALSE, cache = TRUE)
-#opts_chunk$set(cache.rebuild=TRUE) 
 
+# rebuilt the cache
+#opts_chunk$set(cache.rebuild=TRUE)
+```
+
+
+```{r}
 # My colors:
 SIAP.color <- "#0385a8"
 ```
@@ -69,8 +76,6 @@ library(Polychrome)
 
 ```
 
-
-
 Supervised classification aims at explaining a binary variable $y$ (sucess/failure) by covariates $x$, say the probability of rural (of repayment of a loan) by some explanatory variables (income, ...). A classifier tells us if we predict success or failure given the covariates.
 
 We will look at some simple models of classification, as well the many dimensions that we can use to evaluate a classifier.
@@ -81,8 +86,9 @@ In statistics, we often denote $y$ as 1 or -1 (positive or negative) (we could c
 \, .
 \]
 
-In the data set we use here as an example, we have two predictors, *Education* and *Income*, and the dependent variable is whether the household is living in a *rural* or *urban* environment. 
-
+## Example with a data set:
+Let's start with an example and a data set with households  living in a *rural* or *urban* environment. 
+To try to characterize (and then predict) each household location (our *dependent* variable) , we have two predictors (or *explanatory* variables)  *Education* and *Income.
 
 ```{r data}
 data(twoClassData)
@@ -96,11 +102,13 @@ twoClassColor <- brewer.pal(3,'Set2')[2:1]
 names(twoClassColor) <- c('Urban','Rural')
 ```
 
+A quick summary showing the repartition of household's locations.  
 
 ```{r summary}
 summary(twoClass$classes)
 ```
 
+Note that we have defined *Urban* as being the first class.
 
 ```{r univariatefig}
 # univariate plot 
@@ -116,8 +124,30 @@ ggplot(data = twoClass,aes(x = Education, y= 1)) +
         axis.ticks.y=element_blank())
 ```
 
+## A first classifier in one dimension
+A classifier typically separates **urban** from **rural** households using a simple threshold. Here for example, the classifier is a separating households based on the level of education with a threshold at 0.3. On the right of this threshold, households are in majority *Urban* , on the left *Rural*.     
 
-Note that we have defined *Urban* as being the first class, but we may want to change this along the way.
+
+```{r univariate}
+# univariate plot 
+ggplot(data = twoClass,aes(x = Education, y= 1)) + 
+  geom_point(aes(color = classes), size = 2, alpha = .5) +
+  geom_segment(aes(x = 0.3, y = 0.5, xend = 0.3, yend = 1.5),
+               colour = "orange", 
+               linewidth = 2)+
+ # annotate("text", x = 0.3,  label = "urban")
+  scale_colour_manual(name = 'classes', 
+                      values = twoClassColor) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_y_continuous(expand = c(0.9,1.1))+
+  theme_minimal()+ 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+```
+
+## Two-dimensions classifier
+ Since we have **two** explanatory variables, we can represent our households with a scatterplot along the two explanatory variables "*Education*" and " *Income*".
 
 ```{r bivariatefig}
 ggplot(data = twoClass,aes(x = Education, y = Income)) + 
@@ -130,13 +160,15 @@ ggplot(data = twoClass,aes(x = Education, y = Income)) +
 ```
 
 ```{r NicePlotsFunction, echo=FALSE}
-## This is not useful for you
-nbp <- 250
+## This chuk is quite technical and is not useful for you
+nbp <- 250  # Number of points for prediction
 PredA <- seq(min(twoClass$Education), max(twoClass$Education),
              length = nbp)
 PredB <- seq(min(twoClass$Income), max(twoClass$Income), 
              length = nbp)
 Grid <- expand.grid(Education = PredA, Income = PredB)
+
+# Function for representing decisions boundaries for any classifier 
 PlotGrid <- function(pred,title) {
   surf <- (ggplot(data = twoClass, 
                   aes(x = Education, y = Income, 
@@ -177,7 +209,7 @@ PlotGrid <- function(pred,title) {
 
 
 
-# Classifiers
+# Examples of Classifiers
 
 ```{r Setseeds, echo=FALSE}
 # function to set up random seeds
