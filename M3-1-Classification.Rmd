@@ -4,15 +4,6 @@ author: "Christophe Bontemps & Patrick Jonsson - SIAP^[*This document uses teach
   materials developped by Pascal Lavergne* (*Toulouse School of Economics*)]"
 subtitle: Some concepts
 output:
-  word_document:
-    toc: true
-  html_document:
-    df_print: paged
-    toc: true
-    keep_md: true
-    code_folding: show
-    fig_width: 6.5
-    fig_height: 4
   pdf_document:
     df_print: kable
     toc: true
@@ -20,6 +11,16 @@ output:
     fig_width: 6.5
     fig_height: 4
     extra_dependencies: float
+  html_document:
+    df_print: paged
+    toc: true
+    keep_md: true
+    code_folding: show
+    fig_width: 6.5
+    fig_height: 4
+  word_document:
+    toc: true
+always_allow_html: true
 ---
 
 
