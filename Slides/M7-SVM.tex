@@ -1,0 +1,424 @@
+\documentclass[xcolor=x11names,compress]{beamer}
+%% General document
+\usepackage{graphicx, subfig}
+%% Beamer Layout
+\useoutertheme[subsection=false,shadow]{miniframes}
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+
+%%%%%%% Mes Packages %%%%%%%%%%%%%%%%
+%\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{dsfont} % Pour indicatrice
+\usepackage{url}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}   % For strike out text
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%remove the icon
+\setbeamertemplate{bibliography item}{}
+
+%remove line breaks
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+%% ------ MEs couleurs --------
+\definecolor{vert}{rgb}{0.1,0.7,0.2}
+\definecolor{brique}{rgb}{0.7,0.16,0.16}
+\definecolor{gris}{rgb}{0.7, 0.75, 0.71}
+\definecolor{twitterblue}{rgb}{0, 0.42, 0.58}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{siap}{RGB}{3,133, 200}
+
+
+%%%%%%%%%%%%%%%%% BEAMER PACKAGE %%%%%%%
+
+\setbeamercolor{itemize item}{fg=siap}
+%\setbeamercolor{itemize subitem}{fg=blue}
+%\setbeamercolor{itemize subsubitem}{fg=cyan}
+
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4}
+\setbeamercolor*{normal text}{fg=black,bg=white}
+\setbeamercolor*{alerted text}{fg=siap}
+\setbeamercolor*{example text}{fg=black}
+\setbeamercolor*{structure}{fg=black}
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10}
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10}
+
+% Set the header color to SIAP's color
+\setbeamercolor*{frametitle}{fg=siap}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+%% Add footer with logo
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}
+    \includegraphics[height=5ex]{SIAP_logo_Big.png}\hfill
+    \insertshortauthor\hfill\insertshorttitle\hfill  \textcolor{siap}{\textit{\insertframenumber}}
+  \end{beamercolorbox}%
+}
+% Path for the graphs
+\graphicspath{
+{Graphics/}{../../../../Visualisation/Presentations/Graphics/}
+{../../Visualisation/Presentations/Graphics/}
+{c:/Chris/Visualisation/Presentations/Graphics/Logos/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-0-SimpleTrees_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-1-DecisionTrees_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module2/M2-1-SimpleClassification_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-2-RandomForest_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module5/M5-1-SVM_files/figure-html/}
+{c:/Chris/UN-ESCAP/MyCourses2022/MLOS2022/Slides/Graphics/}
+}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%%%% Use it or not %%%%
+
+\title{\textcolor{siap}{Machine Learning for Official Statistics in Asia-Pacific countries \\ \vspace{0.5cm} }}
+
+\subtitle{\textcolor{brique}{\Large{Principles of Support Vector Machine (SVM)}}}
+\author{\textcolor{siap}{Christophe Bontemps}}
+\institute{ \includegraphics[height=9ex]{SIAP_logo_Big.png}}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\section{Introduction}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Understanding  SVM   ]}}
+\textit{Support Vector Machine} (SVM) is a classifier\\
+\pause
+\begin{itemize}[<+->]
+  \item One of the best "out of the box" classifier
+  \item Lots of refinements
+  \item Based on two very different ideas
+  \begin{itemize}[<+->]
+    \item Dimension augmentation
+    \item Maximal margin classifier
+  \end{itemize}
+  \item Technical details require advanced mathematics
+  \item[$\hookrightarrow$] Focus on seminal ideas and intuitions
+\end{itemize}
+\end{frame}
+
+\section{The VC dimension}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ The  Vapnik–Chervonenkis dimension ]}}
+\pause
+\begin{itemize}[<+->]
+    \item The \textit{Vapnik–Chervonenkis} (VC) dimension measures the complexity that can be learned by a classifier
+    \item The VC dimension is defined as the maximum  number of points allowing a separation by a linear classifier
+    \item[$\hookrightarrow$]  $ VC(f)$ = \# points always separable in the current space
+    \item Useful to measure the complexity of a particular model in a given space
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ The  Vapnik–Chervonenkis dimension]}}
+\begin{itemize}
+   \item[]
+   \only<2-5>{In  1-D, there are 4 situation with 2 points: \\ }
+   \only<2> {\includegraphics[width = 0.8\textwidth]{VC1D-OO.png} \\ }
+   \only<2> {Both orange }
+   \only<3> {\includegraphics[width = 0.8\textwidth]{VC1D-BB.png} \\ }
+   \only<3> {Both blue}
+   \only<4> {\includegraphics[width = 0.8\textwidth]{VC1D-OB.png} \\ }
+   \only<4> {One orange, one blue}
+   \only<5> {\includegraphics[width = 0.8\textwidth]{VC1D-BO.png} \\ }
+   \only<5> {One blue, one orange}
+   \only<6>{ What happens with 3 points?}
+   \only<6> {\includegraphics[width = 0.8\textwidth]{VC1D-OBO.png}  \\ }
+   \only<6>{\emph{A situation where no linear classifier works!}  \\
+            $\hookrightarrow$ $VC(f_{lin})$ = 2}
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ The  Vapnik–Chervonenkis dimension]}}
+\pause
+\begin{itemize}
+  \item[]
+  \only<2-10>{In 2-D, there are  $2^3 = 8$ different situations with 3 points: \\  \vspace{0.8cm}  }
+   \only<2> {\includegraphics[width = 0.7\textwidth]{VC2D-OOO.png} \\ }
+   \only<3> {\includegraphics[width = 0.7\textwidth]{VC2D-BOO.png} \\ }
+   \only<4> {\includegraphics[width = 0.7\textwidth]{VC2D-OBO.png} \\ }
+   \only<5> {\includegraphics[width = 0.7\textwidth]{VC2D-OOB.png}  \\ }
+   \only<6> {\includegraphics[width = 0.7\textwidth]{VC2D-BBO.png} \\ }
+   \only<7> {\includegraphics[width = 0.7\textwidth]{VC2D-BOB.png} \\ }
+   \only<8> {\includegraphics[width = 0.7\textwidth]{VC2D-OBB.png} \\ }
+   \only<9> {\includegraphics[width = 0.7\textwidth]{VC2D-BBB.png}  \\ }
+   \only<10> { \includegraphics[width = 0.2\textwidth]{VC2D-OOO.png}
+               \includegraphics[width = 0.2\textwidth]{VC2D-BOO.png}
+               \includegraphics[width = 0.2\textwidth]{VC2D-OBO.png}
+               \includegraphics[width = 0.2\textwidth]{VC2D-OOB.png}\\
+               \vspace{1cm}
+               \includegraphics[width = 0.2\textwidth]{VC2D-BBO.png}
+               \includegraphics[width = 0.2\textwidth]{VC2D-BOB.png}
+               \includegraphics[width = 0.2\textwidth]{VC2D-OBB.png}
+               \includegraphics[width = 0.2\textwidth]{VC2D-BBB.png} \\  }
+
+   \only<11>{ What happens with 4 points?}
+   \only<11> {\includegraphics[width = 0.7\textwidth]{VC2D-OBBO.png}  \\ }
+   \only<11> {\emph{A situation where no linear classifier works!} \\
+            $\hookrightarrow$ $VC(f_{lin})$ = 3}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Interpretation of the VC dimension ]}}
+\pause
+\begin{itemize}[<+->]
+    \item $VC(f)$  measures the complexity of the classifier $f$, linear or not
+    \item A highly non-linear classifier will always be able to separate a high number of points
+    \item[] It can be shown that:
+    \begin{itemize}[<+->]
+    \item Classifiers with a \textbf{high} VC dimension will be better at learning and fitting the training data set
+    \item[$\hookrightarrow$]  \textbf{High} risk of over-fitting
+    \item Classifiers with a \textbf{low} VC dimension make more errors on the training data set, but may be better in prediction
+    \item[$\hookrightarrow$]  \textbf{Low} risk of over-fitting
+    \end{itemize}
+\item New version of the \textbf{Bias-Variance} trade off!
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Implications of the VC dimension ]}}
+\pause
+\begin{itemize}[<+->]
+    \item The  Vapnik–Chervonenkis inequality (\emph{simplified}):
+    $$
+        \epsilon_{\;validation}(f)  \leq   \epsilon_{\;train}(f)  + G( VC(f) , m)
+    $$
+    \item[] Where:
+    \begin{itemize}[<+->]
+        \item[-] $\epsilon(\cdot)$ is the error rate,
+        \item[-] $m$ is the nb of training sets and
+        \item[-]  $G(\cdot)$  a function \textbf{decreasing }with  $m$ (obviously)  % the more you train, the closest the valisdation error to the  trianing arreor
+        \item[]  \hspace{2.45cm}  \textbf{increasing} with $VC$ !! % The higher $VC$ the greater the difference between  \eps_{validation}(f)  and  \eps_{train}(f)
+    \end{itemize}
+    \item[$\hookrightarrow$] The higher $VC(f)$ the greater the difference between performance on the \textit{training} and \textit{validation} sample
+    \item[$\hookrightarrow$] Better to use simple models (low VC)
+\end{itemize}
+\end{frame}
+
+\section{Dimension augmentation}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Linear Boundaries in a simple example ]}}
+\pause
+\begin{itemize}[<+->]
+    \item[] Take the following hypothetical situation
+     \only<2> {\includegraphics[width = 0.8\textwidth]{initial-1.png} \\ }
+     \only<3> {\includegraphics[width = 0.8\textwidth]{initial-2.png} \\ }
+    \item[$\hookrightarrow$] It is easy to \textit{separate} the two classes with a linear  classifier
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Linear Boundaries in a simple example ]}}
+\pause
+\begin{itemize}[<+->]
+    \item[] But in this  situation?
+     \only<2-3> {\includegraphics[width = 0.8\textwidth]{overlap-1.png} \\ }
+    \item[$\hookrightarrow$] There is no way to  \textit{separate} the two classes with a linear  classifier!!
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Linear Boundaries in a simple example ]}}
+\pause
+\begin{itemize}[<+->]
+  \item[] \begin{center} \huge Unless... \end{center}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Dimension augmentation]}}
+\pause
+\begin{itemize}[<+->]
+    \item[] Unless  one adds a third dimension!
+     \only<2> {\includegraphics[width = 0.8\textwidth]{augmented-1.png} \\ }
+     \only<3> {\includegraphics[width = 0.8\textwidth]{augmented-2.png} \\ }
+    \item[$\hookrightarrow$] A  linear classifier can \textit{separate} the two classes  in an \textit{augmented} space (third dimension)
+\end{itemize}
+\end{frame}
+
+\section{Soft margin}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Maximal Margin Classifier ]}}
+\pause
+\begin{itemize}[<+->]
+    \item[] The maximum margin classifier is defined as:
+     \only<2> {\includegraphics[width = 0.8\textwidth]{augmented-2.png} \\ }
+     \only<3> {\includegraphics[width = 0.8\textwidth]{marginal-1.png} \\ }
+    \item[$\hookrightarrow$] $M$ is the margin.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Maximal Margin Classifier ]}}
+\pause
+\begin{itemize}[<+->]
+    \item[] The optimization problem to find this margin is :\\
+    \only<2> {\emph{with $(\beta_0 +x'\beta)$ defining the boundary (line or hyperplane) }\\}
+    \only<2> {\begin{eqnarray*}
+                Max_{\beta_0, \beta} & M & \\
+                subject\; to:\; y_i(\beta_0 +x' \beta) &\geq &  M
+               \end{eqnarray*}
+               }
+    \only<2> {and $y_i = 1 \; or -1$ depending on the class of observation $i$ }
+    \only<3> {$\hookrightarrow$ This can be relaxed  \\ }
+    \only<3> {\begin{eqnarray*}
+                Max_{\beta_0, \beta} & M & \\
+                subject\; to:\; y_i(\beta_0 +x' \beta) &\geq &  M - \xi
+               \end{eqnarray*}
+               }
+   \only<3> {where $\xi$  is the \textit{slack} parameter}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Soft margin ]}}
+Introducing \textit{soft margins} is one idea implemented in SVM
+\pause
+\begin{itemize}[<+->]
+    \item[] The slack parameter will play an important role
+    \item A small \textit{slack} allows few exceptions
+    \item[$\hookrightarrow$] Boundary (classifier) sensitive to outliers
+    \item A large \textit{slack} allows lots of errors and misclassifications
+    \item[] The optimization problem  is equivalent to:
+    \begin{eqnarray}
+                & Min_{\beta_0, \beta} &  \frac{1}{2} \| \beta \|^2 + C \sum_{i=1}^N \xi_i  \\
+        \nonumber       & subject\; to:\; &  y_i(\beta_0 +x'\beta) \geq  M - \xi_i
+    \end{eqnarray}
+    \item[$\hookrightarrow$] SVM is a trade-off between maximal $M$ and cost $C$ of errors due to $\xi$
+\end{itemize}
+\end{frame}
+
+
+\section{Kernel trick}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ The \textit{kernel trick} ]}}
+The previous optimization method applies to an (\textit{augmented}) space with separable classes
+\pause
+\begin{itemize}[<+->]
+    \item How do we determine this \textit{augmented} space?
+    \item[] How to find $\phi(\cdot)$ so that $X_3 = \phi(X_1, X_2)$  separates classes?
+    \item[] \includegraphics[width = 0.6\textwidth]{marginal-1.png}
+    \item[$\hookrightarrow$] The \emph{kernel trick!}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ The \textit{kernel trick} ]}}
+Finding $\phi(\cdot)$ is difficult and sometimes infeasible!
+\pause
+\begin{itemize}[<+->]
+   \item One can rewrite the optimization problem
+    \item[$\hookrightarrow$] Transform the $Xs$ through kernels $K(\cdot)$
+    \item A \emph{kernel} quantifies the similarity of two observations (\textit{inner product})
+    \item The optimization can be written \textbf{only} in terms of $K(X_i, X_j)$!
+    \item[$\hookrightarrow$] The solution is non linear in the  original space
+    % \item[]\includegraphics[width = 0.6\textwidth]{overlap-1.png}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Hyperparameters in SVM ]}}
+Several hyperparameters have to be selected:
+\pause
+\begin{itemize}[<+->]
+   \item The slack parameter
+   \item The type of kernel (\textit{linear, radial, sigmoid}, ..)
+   \item In an ML framework,  one trains the SVM on several samples
+   \begin{itemize}[<+->]
+        \item Number of CV sample should be reduced (100)
+        \item Linear kernel are less computationally intensive
+    \end{itemize}
+    \item Proceed with parsimony and increase complexity
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Quiz time]}}
+\pause
+\begin{itemize}[<+->]
+  \item[]
+\end{itemize}
+\end{frame}
+
+
+\section{Wrap-up}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Takeaways]}}
+SVM is a complex but popular technique
+\begin{itemize}[<+->]
+\item Based on several clever ideas:
+\begin{itemize}[<+->]
+    \item Dimension augmentation
+    \item Maximal margin classifier
+    \item[$\hookrightarrow$] Soft margins with a \textit{slack} parameter
+    \item A trick to avoid costly features transformations
+    \item[$\hookrightarrow$] The \textit{Kernel Trick}
+    \end{itemize}
+\item Due to the VC theory, SVM use simple models
+\item SVM requires optimization and CPU
+\item Implemented in many software!
+\end{itemize}
+\end{frame}
+
+
+\end{document}
+%%%%%%%%%%%%%%% Last Slide %%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]%in case more than 1 slide needed
+\frametitle{References}
+    {\footnotesize
+    %\bibliographystyle{authordate1}
+    \bibliographystyle{apalike}
+    \bibliography{../../../Visualisation/Visu}
+    }
+\end{frame}
+\end{document}
+
+%\bibliographystyle{authordate1}
+%\bibliography{c:/Chris/Visualisation/Visu}
+%\end{frame}

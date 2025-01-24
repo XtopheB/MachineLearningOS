@@ -1,0 +1,635 @@
+\documentclass[xcolor=x11names,compress]{beamer}
+%% General document
+\usepackage{graphicx, subfig}
+%% Beamer Layout
+\useoutertheme[subsection=false,shadow]{miniframes}
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+
+%%%%%%% Mes Packages %%%%%%%%%%%%%%%%
+%\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{dsfont} % Pour indicatrice
+\usepackage{url}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}   % For strike out text
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%remove the icon
+\setbeamertemplate{bibliography item}{}
+
+%remove line breaks
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+%% ------ MEs couleurs --------
+\definecolor{vert}{rgb}{0.1,0.7,0.2}
+\definecolor{brique}{rgb}{0.7,0.16,0.16}
+\definecolor{gris}{rgb}{0.7, 0.75, 0.71}
+\definecolor{twitterblue}{rgb}{0, 0.42, 0.58}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{siap}{RGB}{3,133, 200}
+
+
+%%%%%%%%%%%%%%%%% BEAMER PACKAGE %%%%%%%
+
+\setbeamercolor{itemize item}{fg=siap}
+%\setbeamercolor{itemize subitem}{fg=blue}
+%\setbeamercolor{itemize subsubitem}{fg=cyan}
+
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4}
+\setbeamercolor*{normal text}{fg=black,bg=white}
+\setbeamercolor*{alerted text}{fg=siap}
+\setbeamercolor*{example text}{fg=black}
+\setbeamercolor*{structure}{fg=black}
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10}
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10}
+
+% Set the header color to SIAP's color
+\setbeamercolor*{frametitle}{fg=siap}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+%% Add footer with logo
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}
+    \includegraphics[height=5ex]{SIAP_logo_Big.png}\hfill
+    \insertshortauthor\hfill\insertshorttitle\hfill  \textcolor{siap}{\textit{\insertframenumber}}
+  \end{beamercolorbox}%
+}
+
+
+% Path for the graphs
+\graphicspath{{Graphics/}
+{../../../../Visualisation/Presentations/Graphics/}
+{../../Visualisation/Presentations/Graphics/}
+{c:/Gitmain/MLCourse/UNML/Module3/M3-Regression_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module2/M2-1-SimpleClassification_files/figure-html/}
+{c:/GitMain/MLCourse/UNML/Module0/M0_files/figure-html/}
+{c:/Chris/UN-ESCAP/MyCourses2022/MLOS2022/Slides/Graphics/}
+{c:/Chris/UN-ESCAP/MyCourses2023/BigDataKostat/Slides/Graphics/}
+}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%%%% Use it or not %%%%
+
+\title{\textcolor{siap}{Machine Learning for Official Statistics in Asia-Pacific countries \\ \vspace{0.5cm} }}
+
+\subtitle{\textcolor{brique}{\Large{Regression in ML}}}
+\author{\textcolor{siap}{Christophe Bontemps}}
+\institute{ \includegraphics[height=9ex]{SIAP_logo_Big.png}}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+%% http://www.sthda.com/english/articles/37-model-selection-essentials-in-r/153-penalized-regression-essentials-ridge-lasso-elastic-net/
+%%
+\section{Introduction}
+
+\begin{frame} % Cover slide
+
+\frametitle{\textcolor{brique}{[ Linear Regression ]}}
+Multivariate Linear Regression is one of the most popular tool
+\pause
+\begin{itemize}[<+->]
+  \item Can be used with many variables
+  \item Can be used with both continuous or discrete variables (categories)
+  \item Can be a very efficient tool
+  \item Has to be well defined, need to verify some hypothesis
+  \item[] Expressed as: $$
+  y  = \beta_0 + x'\beta + \varepsilon \qquad  E (\varepsilon|x)  = 0
+  $$
+  \item[] with possibly many regressors $x_j$
+\end{itemize}
+\end{frame}
+
+\section{Scaling variables}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Linear Regression: Centering variables]}}
+$$
+y  = \beta_0 + \beta_1 x_1 + \ldots + \beta_{k} x_k + \varepsilon \qquad E (\varepsilon|x)  = 0
+$$
+\pause
+\begin{itemize}[<+->]
+  \item $\beta_j$ is the "\textit{ceteris paribus"} marginal effect of $x_j$ on $y$.
+  \item[$\hookrightarrow$]  \textit{when  $x_j$  increases by one unit, then $y$  increase by $\beta_j$ units}.
+ \item $\beta_0$ is the mean of $y$ \textbf{if all $x_j$ are equal to zero}
+  $$
+    \beta_0  = E(y) - \beta_1 E(x_1) - \ldots - \beta_{k} E(x_k)  $$
+  \item Centering the variables has no effect on the coefficients
+     $$
+   y = \alpha_0 + \beta_1 (x_1-E(x_1)) + \ldots + \beta_{k} (x_k-E(x_k))  + \varepsilon \qquad E (\varepsilon|x)  = 0
+    $$
+  \item[\textbf{Except:}] $ \alpha_0$  is the mean of $y$ \textbf{if all $x_j$ are equal their mean}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Linear Regression: Scaling ]}}
+
+We can also scale each variable by its own standard deviation to obtain
+$$
+y = \alpha_0 + \gamma_1 \tilde{x_1} + \ldots + \gamma_{k} \tilde{x_k}  + \varepsilon \qquad E (\varepsilon|x)  = 0
+$$
+\pause
+\begin{itemize}[<+->]
+  \item[] where $$\tilde{x} = \frac{x-E(x)}{\sigma_x} $$
+  \item Now $\gamma_j$ is the \textit{ceteris paribus} marginal effect of $\tilde{x}_j$ on $y$.
+   \item[$\hookrightarrow$] \textit{when  $\tilde{x}_j$ increases by one standard deviation,  $y$ increases by $\gamma_j$ units}
+  \item The goal is to have variables and coefficients that are comparable
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Linear Regression: Example ]}}
+\pause
+\begin{itemize}
+\item Example on a regression model with few variables\\
+  \only<2> {\includegraphics[width = 0.8\textwidth]{RegBank.JPG} \\ }
+  \only<2> {Initial regression with original values}
+  \only<3> { \includegraphics[width = 0.8\textwidth]{RegBankCentered.JPG} \\ }
+  \only<3> {Regression with centred variables}
+  \only<4> {\includegraphics[width = 0.8\textwidth]{RegBankScaled.JPG} \\ }
+  \only<4> {Regression with scaled variables}
+  \only<5> {The goal is to have \textit{comparable} effects (same range)\\ }
+  \only<5> {\includegraphics[width = 0.8\textwidth]{visualreg-1.png} \\ }
+  \only<5> {Visual regression with scaled variables}
+\end{itemize}
+\end{frame}
+
+
+\section{Problems}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Problems in Linear Regression ]}}
+\textbf{Collinearity } of regressors is a big issue in regression
+\pause
+\begin{itemize}[<+->]
+  \item Redundant predictors add more complexity than information
+  \item Highly correlated predictors result in unstable estimation
+  \item Highly correlated predictors worsen predictability
+  \item[$\hookrightarrow$] Correlation plot
+  \item[] \includegraphics[width = 0.6\textwidth]{simplecorrelation-1.png}
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Problems in Linear Regression ]}}
+ Which variable should be removed?
+ \pause
+\begin{itemize}[<+->]
+  \item[] \textbf{Variance Inflation Factor}
+  \item Measure of multi-collinearity between variables
+  \item Measure how much the variance of the coefficient of $x_j$ is inflated due to the presence of other regressors.
+  \item VIF for  $x_j$ is calculated by running a regression of $x_j$ on all other regressors, computing the $R_j^2$ and use the formula:
+  \item[] $$
+  VIF_j  = \frac{1}{1 - R^2_j}
+  $$
+  \item[] $VIF_j = 1$ indicates no collinearity; a $VIF \geq 10$  is considered as large and problematic
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Solutions to multi-collinearity ]}}
+2 solutions to multi-colinearity:
+\pause
+\begin{itemize}[<+->]
+  \item Create new variables from the ones that are collinear
+  \item[$\hookrightarrow$] using \textit{e.g.} Principal Components Analysis
+  \item Remove some variables
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Using $VIF$ to remove collinearity]}}
+\pause
+\begin{itemize}[<+->]
+  \item[]Computing VIFs for all $x_j$s
+  \item[] \includegraphics[width = 0.5\textwidth]{SimpleVIF.JPG} \\
+\item  \emph{Trans} has the highest VIF
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Using $VIF$ to remove collinearity]}}
+Conclusion:
+\pause
+\begin{itemize}[<+->]
+  \item[] Omitting one variable (\textit{Trans:})
+  \item[] \includegraphics[width = 0.5\textwidth]{SimpleVIFreduced.JPG} \\
+ \item  does not change the fit of the model
+ \item  does not change the coefficients of the uncorrelated regressors
+ \item reduces all the $VIF$s
+\end{itemize}
+\end{frame}
+
+
+
+\section{Classic methods}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Real life Example]}}
+In real life, one may have many variables
+\pause
+\begin{itemize}[<+->]
+  \item[] \includegraphics[width = 0.9\textwidth]{fullcorrelation-1.png}
+  \item[$\hookrightarrow$] \textit{Automatic selection of regressors }
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Automatic selection of regressors]}}
+Classic (but still alive) methods based on the variations of RSS
+\pause
+\begin{itemize}[<+->]
+  \item Automatic Forward selection
+  \item Automatic Backward selection
+  \item Stepwise selection
+  \item[\textbf{Remark:}]
+  \item The optimal number of regressors is unknown!
+  \item[$\hookrightarrow$] \textit{The number of possible combinations with $k$ regressors is $2^k$ }
+  \item Compute the optimal nb of regressors before testing which regressors to include with Cross Validation
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Application on an Example]}}
+\emph{To reduce the computational burden we restrict our choice to \textbf{8} variables in the final regression.}
+\pause
+\begin{itemize}
+  \item[]
+  \only<2> { \includegraphics[width = 0.7\textwidth]{visualLeapFwd-1.png} \\ }
+  \only<2> {Visual representation of variables used (Forward) }
+  \only<3> {\includegraphics[width = 0.7\textwidth]{visualLeapBwd-1.png} \\ }
+  \only<3> {Visual representation of variables used (Backward) }
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Criterions for  Number of regressors]}}
+
+\pause
+\begin{itemize}[<+->]
+  \item Forward \& Backward selection provide different solutions:
+  \item[] \includegraphics[width = 0.4\textwidth]{visualLeapFwd-1.png} \includegraphics[width = 0.4\textwidth]{visualLeapBwd-1.png}
+  \item \begin{center} \emph{Great Need for Criteria} \end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Automatic selection of regressors]}}
+From the linear model in matrix form:
+$$
+ y = X \beta + \varepsilon,
+$$
+\pause
+\begin{itemize}[<+->]
+  \item Consider  a partition of $X$ in $X_p$ ($p+1$ regressors) and $X_r$ ($k-p-1$ regressors)
+  \item[] The goal is to find the "\textit{best}" $p$-model
+      $$
+      y = X_p \beta_p + \varepsilon
+      $$
+  \item "Best" means  best in prediction
+  \item[$\hookrightarrow$] \emph{Mean Squared Error of Prediction} or MSEP:
+  $$
+    MSEP = n^{-1} E \| y_{new} - X_p\widehat{\beta}_p\|^2
+  $$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Automatic selection of regressors]}}
+
+The MSEP can be decomposed to help define criterions:
+\begin{eqnarray*}
+MSEP &=& n^{-1} E \| y_{new} - X_p\widehat{\beta}_p\|^2   \\
+    &=& n^{-1} \left\{ E \| y_{new} - X{\beta}\|^2 + E \| X{\beta} - X_p\widehat{\beta}_p\|^2  \right\}\\
+    &=& (1+(p+1)/n) \sigma^{2} + (1/n) \beta'X' M_p X\beta
+\end{eqnarray*}
+\pause
+\begin{itemize}[<+->]
+  \item Mallow's \textbf{Cp}  $ = \frac{RSS_p}{n}  + \frac{2(p+1)}{n} \frac{RSS_k}{n-k-1} $
+  \item Akaike Information Criterion (\textbf{AIC})  $\propto C_p$ for linear regression
+  \item Bayesian  Information Criterion (\textbf{BIC}): $$ BIC \propto \frac{RSS_p}{n}  + \frac{(p+1) \log n}{n} \frac{RSS_k}{n-k-1} $$
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Application on the Example]}}
+\pause
+\begin{itemize}
+  \item[]
+  \only<2-3> {Selection using Mallow's $C_p$ ($\rightarrow $ 8 variables) }
+  \only<2> { \includegraphics[width = 0.7\textwidth]{LeapsCp-1.png} \\ }
+  \only<3> { \includegraphics[width = 0.7\textwidth]{VisualRegCp-1.png} \\ }
+  \only<4-5> {Selection using BIC ($\rightarrow $ 6 variables) }
+  \only<4> { \includegraphics[width = 0.7\textwidth]{LeapsBIC-1.png} \\ }
+  \only<5> { \includegraphics[width = 0.7\textwidth]{VisualRegBIC-1.png} \\ }
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Cross Validation ]}}
+Now we can use cross Validation on all  models
+\pause
+\begin{itemize}[<+->]
+  \item[] \includegraphics[width = 0.7\textwidth]{CVComparison-1.png}
+  \item The model selected with $C_p$ is doing the best job
+  \item[$\hookrightarrow$] \textbf{Technical issue}:
+  \item[]  When using CV with stepwise selection different p-models are selected for each K-fold
+  \item Modern methods are available...
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Takeaways]}}
+\begin{itemize}[<+->]
+\item In linear regression, scaling allows to compare coefficients and to measure variable importance.
+\item Multi-collinearity should be investigated beforehand.
+\item Mallows $C_p$ is a simple method to select regressors
+\item Stepwise methods with CV have three drawbacks:
+    \begin{itemize}[<+->]
+        \item they do not necessarily select the "best" model
+        \item the choice of variables can be sensitive to the number of repetitions
+        \item Variable selection/elimination is done variable by variable (no interactions)
+    \end{itemize}
+\item Other (modern) methods exist
+\end{itemize}
+\end{frame}
+
+
+\section{Penalization Methods}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Penalization methods]}}
+\pause
+\begin{itemize}[<+->]
+\item \textbf{Problem:} When many variables are available and used:
+ \begin{itemize}[<+->]
+        \item Potential multi-collinearity
+        \item Model complexity
+        \item Over-fitting
+    \end{itemize}
+\item[$\hookrightarrow$]  How to \emph{"penalize"} models with many $\beta$s?
+\item Large $\beta$s are kind of a problem:
+    \begin{itemize}[<+->]
+            \item[]\begin{center} \large{ Why?} \end{center}
+            \item[$\hookrightarrow$] Important weight on \textbf{one} variable
+            \item[$\hookrightarrow$] Small changes implies big variations (Instability)
+            \item[$\hookrightarrow$] Uneven distribution of coefficients (robustness issue)
+        \end{itemize}
+\item \textbf{Solution:}  \textit{ Penalized least-squares methods}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Penalization methods]}}
+\pause
+\begin{itemize}[<+->]
+\item[]  Methods  \emph{"penalizing"} model complexity (over fitting)
+%\item Have intensionally a \textbf{higher bias} and a \textbf{lower variance}
+\item \textit{ Penalized least-squares methods}$$
+\min_{\beta} \frac{1}{2n}
+     \sum_{i=1}^{n}{ \left( y_i - \beta_0 - x'_i\beta\right)^{2} } +
+\lambda \cdot J(\beta_1, \cdots, \beta_k)
+$$
+\item[] $\lambda$ is a \textit{hyper parameter}, $J(\cdot)$ is the penalization function
+\item[NB:] \textit{If $\lambda = 0$ the regression is just the classic OLS estimator}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Penalization methods: Ridge regression]}}
+Ridge regression is  the solution of:
+$$
+\min_{\beta} \frac{1}{2n}
+\sum_{i=1}^{n}{ \left( y_i - \beta_0 - x'_i\beta\right)^{2} } +
+\lambda \frac{\| \beta\|^{2}}{2}
+$$
+\pause
+\begin{itemize}[<+->]
+\item Ridge regression shrinks parameters towards zero and thus avoids too large parameters
+\item The solution is biased intensionally to reduce variance
+\item \textbf{Penalization} methods prevent these problems by \emph{"penalizing"} model complexity
+\item It is important to \textbf{center and scale}  each of the $x$ to ensure the comparability of $\beta$s
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Penalization methods: Ridge regression]}}
+Ridge regression is  the solution of:
+$$
+\min_{\beta} \frac{1}{2n}
+\sum_{i=1}^{n}{ \left( y_i - \beta_0 - x'_i\beta\right)^{2} } +
+\lambda \frac{\| \beta\|^{2}}{2}
+$$
+\pause
+\begin{itemize}[<+->]
+%\item[] A bit of maths ;-)
+\item The solution (ridge estimator) is $\widehat{\beta_R} = \left( \frac{X'X}{n} + \lambda \, I \right)^{-1} \frac{X' y}{n}$
+\item To compare with OLS estimator  $ \widehat{\beta_{OLS}} = \left( \frac{X'X}{n}\right)^{-1} \frac{X' y}{n} $
+\item[$\hookrightarrow$] When there is collinearity, $X'X$ cannot be inverted, while if $\lambda >0$ the matrix $ \left( X'X + \lambda I \right)$ is invertible
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Ridge regression in Practice]}}
+How to choose $\lambda$?
+\pause
+\begin{itemize}[<+->]
+\item We compute the (CV-averaged) $RMSE$ for many values of $\lambda$
+\item[]  \includegraphics[width = 0.7\textwidth]{RidgePlot-1.png}
+\item[]\emph{Remark: $\lambda$ is typically small, and we usually select it on the log scale.}
+%\item[$\hookrightarrow$] Optimal value is $\lambda^* = log_{10} (q^*)$  in the graphic ($=  log_{10}^{0.5} = 1.3$)
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Ridge regression in Practice]}}
+Ridge regression with  optimal $\lambda^*$
+\pause
+\begin{itemize}[<+->]
+\item Variance inflation factor (VIF)  for this model
+\item[] \includegraphics[width = 0.7\textwidth]{ridgeVIFplot-1.png}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Penalization methods: LASSO]}}
+LASSO or \textit{Least Absolute Shrinkage and Selection Operator}, is another common penalization method,
+ is  the solution of:
+$$
+\min_{\beta} \frac{1}{2n}
+\sum_{i=1}^{n}{ \left( y_i - \beta_0 - x'_i\beta\right)^{2} } +
+\lambda |\beta|
+\qquad
+|\beta| = \sum_{j=1}^k |\beta_j|
+$$
+\pause
+\begin{itemize}[<+->]
+\item[$\hookrightarrow$] If $\lambda  = 0$, we obtain OLS. If $\lambda = \infty$, all
+  parameters are zero.
+\item Lasso does automatic variable selection: if $\lambda$ is large enough, the solution put some parameters to zero
+\item It is important to \textbf{center and scale}  each of the $x$ to ensure the comparability of $\beta$s
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[LASSO in Practice]}}
+We compute the (CV-averaged) $RMSE$ for many values of $\lambda$
+\pause
+\begin{itemize}[<+->]
+\item[]  \includegraphics[width = 0.7\textwidth]{LassoPlot-1.png}
+\item[]\textit{Remark: $\lambda$ is typically small, and we usually select it on the log scale.}
+%\item[$\hookrightarrow$] Optimal value is $\lambda^* = log_{10} (q^*)$  in the graphic ($=  log_{10}^{0.5} = 1.3$)
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[LASSO in Practice]}}
+Regression with  optimal $\lambda^*$ for LASSO
+\pause
+\begin{itemize}[<+->]
+\item Variance inflation factor (VIF)  for this model
+\item[] \includegraphics[width = 0.7\textwidth]{lassoVIFplot-1.png}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Penalization methods: Elastic Net]}}
+\textit{Elastic Net} combines both Lasso and Ridge regression:
+$$
+\min_{\beta} \frac{1}{2n}
+\sum_{i=1}^{n}{ \left( y_i - \beta_0 - x'_i\beta\right)^{2} } +
+\lambda \left( (1-\alpha) \frac{ \|\beta\|^2}{2}  + \alpha |\beta| \right)
+$$
+\pause
+\begin{itemize}[<+->]
+\item If $\alpha=1$ we have the Lasso estimator, if  $\alpha=0$,  the Ridge regression.
+\item Through $\alpha$ we balance variable selection (Lasso) and coefficient reduction (Ridge)
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Elastic Net in Practice]}}
+Compute the (CV-averaged) $RMSE$ on a  grid of ($\lambda$ , $\alpha$)
+\pause
+\begin{itemize}[<+->]
+\item[]  \includegraphics[width = 0.7\textwidth]{EnetPlot-1.png}
+\item[$\hookrightarrow$] Optimal value: $\alpha^* = 1$  \& $\lambda  = 0.008$  $\hookrightarrow$ Lasso estimator.
+\item Elastic net \emph{encompass} both Ridge and Lasso estimators.
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Elastic Net in Practice]}}
+Elastic net with  optimal $\lambda^*$ and $\alpha^*$ is LASSO since $\alpha^* = 1$!
+\pause
+\begin{itemize}[<+->]
+\item Variance inflation factor (VIF)  for Elastic net
+\item[] \includegraphics[width = 0.7\textwidth]{enetVIFplot-1.png}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Best Model?]}}
+In Machine Learning, focus on prediction  (RMSE)
+\pause
+\begin{itemize}[<+->]
+\item Cross-Validation performance (RMSE):
+\item[] \includegraphics[width = 0.7\textwidth]{FinalComparison-1.png}
+\item LASSO is probably the best (lower RMSE)
+\item Model selected by Mallow's $C_p$  (\textbf{8} regressors) is almost as good!
+\end{itemize}
+\end{frame}
+
+
+
+\section{wrap-up}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Quiz time]}}
+\pause
+\begin{itemize}[<+->]
+  \item[]
+ \end{itemize}
+\end{frame}
+
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Takeaways]}}
+\begin{itemize}[<+->]
+\item Penalized least-squares methods can be used with multicollinearity or with a large number of regressors.
+\item All solutions of a \textit{penalized least-squares problem}$$
+\min_{\beta} \frac{1}{2n}
+     \sum_{i=1}^{n}{ \left( y_i - \beta_0 - x'_i\beta\right)^{2} } +
+\lambda \cdot J_{\alpha}(\beta_1, \cdots, \beta_k)
+$$
+\item[] $\lambda$ is a \textit{hyperparameter}, $J_{\alpha}(\cdot)$ is the penalization function
+\item It is important to \textbf{center and scale}  each of the $x$ to ensure the comparability of $\beta$s
+\item  Selection of \textit{hyper parameters} is based on CV and RMSE
+\item The elastic net "encompass" both Ridge and Lasso estimators.
+\item Penalization methods are very popular in practice
+\end{itemize}
+\end{frame}
+
+\end{document}
+%%%%%%%%%%%%%%% Last Slide %%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]%in case more than 1 slide needed
+\frametitle{References}
+    {\footnotesize
+    %\bibliographystyle{authordate1}
+    \bibliographystyle{apalike}
+    \bibliography{../../../Visualisation/Visu}
+    }
+\end{frame}
+\end{document}
+
+%\bibliographystyle{authordate1}
+%\bibliography{c:/Chris/Visualisation/Visu}
+%\end{frame}

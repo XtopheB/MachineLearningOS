@@ -1,0 +1,250 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\documentclass[xcolor=x11names,compress]{beamer}
+\documentclass[xcolor=x11names,compress]{beamer}
+%% General document
+\usepackage{graphicx, subfig}
+%% Beamer Layout
+\useoutertheme[subsection=false,shadow]{miniframes}
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+
+%%%%%%% Mes Packages %%%%%%%%%%%%%%%%
+%\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{dsfont} % Pour indicatrice
+\usepackage{url}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}   % For strike out text
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%remove the icon
+\setbeamertemplate{bibliography item}{}
+
+%remove line breaks
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+%% ------ MEs couleurs --------
+\definecolor{vert}{rgb}{0.1,0.7,0.2}
+\definecolor{brique}{rgb}{0.7,0.16,0.16}
+\definecolor{gris}{rgb}{0.7, 0.75, 0.71}
+\definecolor{twitterblue}{rgb}{0, 0.42, 0.58}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{siap}{RGB}{3,133, 200}
+
+
+%%%%%%%%%%%%%%%%% BEAMER PACKAGE %%%%%%%
+
+\setbeamercolor{itemize item}{fg=siap}
+%\setbeamercolor{itemize subitem}{fg=blue}
+%\setbeamercolor{itemize subsubitem}{fg=cyan}
+
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4}
+\setbeamercolor*{normal text}{fg=black,bg=white}
+\setbeamercolor*{alerted text}{fg=siap}
+\setbeamercolor*{example text}{fg=black}
+\setbeamercolor*{structure}{fg=black}
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10}
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10}
+
+% Set the header color to SIAP's color
+\setbeamercolor*{frametitle}{fg=siap}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+%% Add footer with logo
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}
+    \includegraphics[height=5ex]{SIAP_logo_Big.png}\hfill
+    \insertshortauthor\hfill\insertshorttitle\hfill  \textcolor{siap}{\textit{\insertframenumber}}
+  \end{beamercolorbox}%
+}
+
+
+% Path for the graphs
+\graphicspath{{Graphics/}
+{../../../../Visualisation/Presentations/Graphics/Logos}
+{../../Visualisation/Presentations/Graphics/}
+{c:/Gitmain/MLCourse/UNML/Module0/M0_files/figure-html/}
+{c:/Chris/UN-ESCAP/MyCourses2022/MLOS2022/Slides/Graphics/}
+{c:/Chris/UN-ESCAP/MyCourses2023/BigDataKostat/Slides/Graphics/}
+{c:/Chris/UN-ESCAP/MyCourses2024/WebScrapping/Graphics/}
+ }
+
+\title{\textcolor{siap}{Big Data: Innovative Methods and Applications for Achieving SDGs \\ \vspace{0.5cm} }}
+
+\subtitle{\textcolor{brique}{\Large{A crash course in R Markdown}}}
+\author{Christophe Bontemps}
+\institute{ \includegraphics[height=10ex]{SIAP_logo_Big.png}}
+\date{}
+
+\begin{document}
+
+% Slide 1: Title Slide
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section{What is R Markdown}
+
+% Slide 2: What is R Markdown?
+\begin{frame}
+    \frametitle{What is R Markdown?}
+    \begin{columns}
+        \column{0.7\textwidth}
+            \begin{itemize}[<+->]
+                \item R Markdown is a file format used natively in RStudio.
+                \item It integrates text, code, and results into one document.
+                \item Supports reproducibility by combining code and analysis.
+            \end{itemize}
+        \column{0.3\textwidth}
+            \includegraphics[width=0.5\textwidth]{Rmarkdown-logo.png} % Example R Markdown image
+    \end{columns}
+\end{frame}
+
+\section{Key components}
+% Slide 3: Key Components of R Markdown
+\begin{frame}
+    \frametitle{Key Components of R Markdown}
+    \begin{columns}
+         \begin{column}{0.35\textwidth}
+            \begin{itemize}[<+->]
+                \item YAML Header
+                \item Code Chunks
+                \item Text/Markdown
+                \item Output Formats
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.65\textwidth}
+            \begin{itemize}
+            \item[]
+                 \only<1>{\includegraphics[width=\textwidth]{MyYAML.png}}
+                \only<2-3>{\includegraphics[width=\textwidth]{MyCodeChunks.png}}
+                \only<4>{\includegraphics[width=0.5\textwidth]{format-dropdown.png}}
+            \end{itemize}
+         \end{column}   
+    \end{columns}
+\end{frame}
+
+
+% Slide 4: YAML Header
+\begin{frame}
+    \frametitle{YAML Header}
+    \begin{itemize}[<+->]
+        \item Appears at the top of the R Markdown file.
+        \item Defines metadata like:\\
+         title, author, date, and output format.
+        \item[] Example: \\
+        \includegraphics[width=\textwidth]{MyYAML.png} % YAML image
+   \end{itemize}
+\end{frame}
+% Slide 5: Code Chunks
+
+\begin{frame}
+    \frametitle{Code Chunks}
+    \begin{itemize}[<+->]
+        \item Code chunks allow you to embed R code inside the document.
+        \item Chunks are enclosed by \textbf{3} backticks.
+        \item Example:
+      \item[]
+       \includegraphics[width=\textwidth]{ChunkExamples.png} 
+          
+    \end{itemize}
+\end{frame}
+
+
+% Slide 6: Chunk Options
+\begin{frame}
+    \frametitle{Chunk Options}
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{itemize}[<+->]
+                \item Control how code chunks behave.
+                \item Common options:
+                \item[-] echo = TRUE/FALSE
+                \item[-] eval = TRUE/FALSE
+                \item[-] include = TRUE/FALSE
+                
+            \end{itemize} 
+        \column{0.5\textwidth}
+            \includegraphics[width=\textwidth]{ChunkOptions.png}
+    \end{columns}
+\end{frame}
+
+\section{Syntax}
+%%% https://rmarkdown.rstudio.com/lesson-1.html  
+% Slide 7: Markdown Syntax
+\begin{frame}
+    \frametitle{Markdown Syntax}
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{itemize}[<+->]
+                \item Use simple markdown syntax to format text.
+                \item Examples:
+                \begin{itemize}
+                    \item *Italics*: *text*
+                    \item **Bold**: **text**
+                    \item `Code`: `code`
+                \end{itemize}
+            \end{itemize}
+        \column{0.5\textwidth}
+            \includegraphics[width=\textwidth]{markdowlanguage.png}
+    \end{columns}
+\end{frame}
+
+\section{Conclusion}
+\begin{frame}
+    \frametitle{Conclusion and Resources}
+    R Markdown integrates text and code for reproducible research.
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{itemize}[<+->]
+                \item For more resources:
+                \item[-]\href{https://rmarkdown.rstudio.com}{R Markdown website}
+                \item[-] \href{https://r4ds.had.co.nz/}{R for Data Science}
+            \end{itemize}
+        \column{0.5\textwidth}
+            \href{https://rmarkdown.rstudio.com/lesson-2.html}{\includegraphics[width=\textwidth]{RmarkdownManual.png}}
+    \end{columns}
+\end{frame}
+
+% the \setbeamercolor and the frame to limit the scope
+{\setbeamercolor{background canvas}{bg=siap}
+ \setbeamercolor{item}{fg=white}
+    \setbeamercolor{normal text}{fg=white}
+    \usebeamercolor[fg]{normal text}
+
+\begin{frame}
+\hspace{4cm}
+\begin{center}
+\Huge{\href{https://github.com/XtopheB/BigData/blob/main/ReportExercise.Rmd}{Your Turn}}
+\end{center}
+\end{frame}
+
+} %end blue Background
+
+
+
+\end{document}
+
+
+
+
+
+

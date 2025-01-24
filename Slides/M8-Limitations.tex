@@ -1,0 +1,202 @@
+\documentclass[xcolor=x11names,compress]{beamer}
+%% General document
+\usepackage{graphicx, subfig}
+%% Beamer Layout
+\useoutertheme[subsection=false,shadow]{miniframes}
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+
+%%%%%%% Mes Packages %%%%%%%%%%%%%%%%
+%\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{dsfont} % Pour indicatrice
+\usepackage{url}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}   % For strike out text
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%remove the icon
+\setbeamertemplate{bibliography item}{}
+
+%remove line breaks
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+%% ------ MEs couleurs --------
+\definecolor{vert}{rgb}{0.1,0.7,0.2}
+\definecolor{brique}{rgb}{0.7,0.16,0.16}
+\definecolor{gris}{rgb}{0.7, 0.75, 0.71}
+\definecolor{twitterblue}{rgb}{0, 0.42, 0.58}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{siap}{RGB}{3,133, 200}
+
+
+%%%%%%%%%%%%%%%%% BEAMER PACKAGE %%%%%%%
+
+\setbeamercolor{itemize item}{fg=siap}
+%\setbeamercolor{itemize subitem}{fg=blue}
+%\setbeamercolor{itemize subsubitem}{fg=cyan}
+
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4}
+\setbeamercolor*{normal text}{fg=black,bg=white}
+\setbeamercolor*{alerted text}{fg=siap}
+\setbeamercolor*{example text}{fg=black}
+\setbeamercolor*{structure}{fg=black}
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10}
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10}
+
+% Set the header color to SIAP's color
+\setbeamercolor*{frametitle}{fg=siap}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+%% Add footer with logo
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}
+    \includegraphics[height=5ex]{SIAP_logo_Big.png}\hfill
+    \insertshortauthor\hfill\insertshorttitle\hfill  \textcolor{siap}{\textit{\insertframenumber}}
+  \end{beamercolorbox}%
+}
+% Path for the graphs
+\graphicspath{
+{Graphics/}{../../../../Visualisation/Presentations/Graphics/}
+{../../Visualisation/Presentations/Graphics/}
+{c:/Chris/Visualisation/Presentations/Graphics/Logos/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-0-SimpleTrees_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-1-DecisionTrees_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module2/M2-1-SimpleClassification_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-2-RandomForest_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module5/M5-1-SVM_files/figure-html/}
+{c:/Chris/UN-ESCAP/MyCourses2022/MLOS2022/Slides/Graphics/}
+}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%%%% Use it or not %%%%
+
+\title{\textcolor{siap}{Machine Learning for Official Statistics in Asia-Pacific countries \\ \vspace{0.5cm} }}
+
+\subtitle{\textcolor{brique}{\Large{Limitations, Biases and Ethical considerations}}}
+\author{\textcolor{siap}{Christophe Bontemps}}
+\institute{ \includegraphics[height=9ex]{SIAP_logo_Big.png}}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}{Introduction}
+ML has significant limitations, particularly regarding bias and ethical issues.
+    \begin{itemize}[<+->]
+        \item ML heavily  relies on a training data sets \\
+         $\hookrightarrow$  Data-related bias
+        \item ML predictions must be taken with care, not blindly\\
+         $\hookrightarrow$ Automation is risky
+        \item 
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Data-related Biases}
+    \begin{itemize}[<+->]
+        \item ML models learn from data, but biased data leads to biased models.\\
+         \item[$\hookrightarrow$]  Unintentionally favor one group over another.
+        \item Occurs when training data is not representative of the real-world population. \\
+         \item[$\hookrightarrow$] Selection bias
+        \item Example: A prediction system performing worse on subcategory of population due to imbalanced training data.
+        \item Labels in training data may reflect human prejudices.
+        \item Example: Sentiment analysis trained on internet comments may learn toxic language norms.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Privacy Concerns}
+    \begin{itemize}[<+->]
+        \item ML systems collect and use vast amounts of personal data.
+        \item Users did not consent to that collection and to that use
+        \item[$\hookrightarrow$]  Also a concern for Big Data that are a by-product and not collected for statistical use
+        \item Example: Predictive policing algorithms using personal data for scoring or ranking people 
+         \item[$\hookrightarrow$] What if private internet search data was used to detect health issue by employers? 
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Explainability and Transparency}
+    \begin{itemize}[<+->]
+        \item Many ML models are "black boxes"
+        \item predictions (decisions) are taken without clear understanding
+        \item Example: A credit scoring model denying loans to a household
+        \item[$\hookrightarrow$]  European Union has introduced regulations to ensure AI transparency and fairness.
+        \item The General Data Protection Regulation (GDPR) includes a "right to explanation" for automated decisions.
+         \item[$\hookrightarrow$] How to explain predictions (decisions) computed by ML algorithms ?
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Ethical Responsibility}
+    \begin{itemize}[<+->]
+        \item Who is responsible when an ML model causes harm?
+        \item Example: An NSO publishes a poverty maps based on ML predictions. This prediction is used for subsidising villages/households within a poverty-reducing policy.
+        \item[$\hookrightarrow$] Who is responsible if a village/household is targeted as non-eligible?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+    \begin{itemize}[<+->]
+        \item ML is powerful but has limitations, especially regarding bias and ethics.
+        \item Solutions include fairness-aware algorithms, diverse data, and transparency.
+        \item Responsible AI development is crucial for minimizing harm.
+    \end{itemize}
+\end{frame}
+
+
+% Slide 11: References
+\begin{frame}{References}
+    \begin{itemize}
+        \item European Commission. (2021). Proposal for a Regulation on a European Approach for Artificial Intelligence (AI Act).
+        \item Goodman, B., \& Flaxman, S. (2017). European Union regulations on algorithmic decision-making and a "right to explanation".
+        \item Wachter, S., Mittelstadt, B., \& Floridi, L. (2017). Why a right to explanation of automated decision-making does not exist in the General Data Protection Regulation.
+    \end{itemize}
+\end{frame}
+
+
+
+\end{document}
+%%%%%%%%%%%%%%% Last Slide %%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]%in case more than 1 slide needed
+\frametitle{References}
+    {\footnotesize
+    %\bibliographystyle{authordate1}
+    \bibliographystyle{apalike}
+    \bibliography{../../../Visualisation/Visu}
+    }
+\end{frame}
+\end{document}
+
+%\bibliographystyle{authordate1}
+%\bibliography{c:/Chris/Visualisation/Visu}
+%\end{frame}
