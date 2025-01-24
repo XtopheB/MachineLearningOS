@@ -1,0 +1,440 @@
+\documentclass[xcolor=x11names,compress]{beamer}
+%% General document
+\usepackage{graphicx, subfig}
+%% Beamer Layout
+\useoutertheme[subsection=false,shadow]{miniframes}
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+
+%%%%%%% Mes Packages %%%%%%%%%%%%%%%%
+%\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{dsfont} % Pour indicatrice
+\usepackage{url}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}   % For strike out text
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%remove the icon
+\setbeamertemplate{bibliography item}{}
+
+%remove line breaks
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+%% ------ MEs couleurs --------
+\definecolor{vert}{rgb}{0.1,0.7,0.2}
+\definecolor{brique}{rgb}{0.7,0.16,0.16}
+\definecolor{gris}{rgb}{0.7, 0.75, 0.71}
+\definecolor{twitterblue}{rgb}{0, 0.42, 0.58}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{siap}{RGB}{3,133, 200}
+
+
+%%%%%%%%%%%%%%%%% BEAMER PACKAGE %%%%%%%
+
+\setbeamercolor{itemize item}{fg=siap}
+%\setbeamercolor{itemize subitem}{fg=blue}
+%\setbeamercolor{itemize subsubitem}{fg=cyan}
+
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4}
+\setbeamercolor*{normal text}{fg=black,bg=white}
+\setbeamercolor*{alerted text}{fg=siap}
+\setbeamercolor*{example text}{fg=black}
+\setbeamercolor*{structure}{fg=black}
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10}
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10}
+
+% Set the header color to SIAP's color
+\setbeamercolor*{frametitle}{fg=siap}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+%% Add footer with logo
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}
+    \includegraphics[height=5ex]{SIAP_logo_Big.png}\hfill
+    \insertshortauthor\hfill\insertshorttitle\hfill  \textcolor{siap}{\textit{\insertframenumber}}
+  \end{beamercolorbox}%
+}
+
+
+% Path for the graphs
+\graphicspath{{Graphics/}
+{c:/Chris/UN-ESCAP/SIAP-E-learning/Resources/}
+{../../../../Visualisation/Presentations/Graphics/}
+{../../Visualisation/Presentations/Graphics/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-0-SimpleTrees_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-1-DecisionTrees_files/figure-html/}  {c:/Gitmain/MLCourse/UNML/Module2/M2-1-SimpleClassification_files/figure-html/}
+{c:/GitMain/MLCourse/UNML/Module0/M0_files/figure-html/}
+}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%%%% Use it or not %%%%
+
+\title{\textcolor{siap}{Machine Learning for Official Statistics and SDG Indicators \\ \vspace{0.5cm} }}
+
+\subtitle{\textcolor{brique}{\Large{Decision Trees}}}
+\author{\textcolor{siap}{Christophe Bontemps}}
+\institute{ \includegraphics[height=9ex]{SIAP_logo_Big.png}}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame} % Cover slide
+
+\frametitle{\textcolor{brique}{[ Decision Trees ]}}
+\textit{Trees} are method for classification or regression analysis.\\
+ $\hookrightarrow$ Focus on classification\\
+\begin{center} \includegraphics[width = 0.5\textwidth]{rparttree-1.png} \end{center}
+\pause
+\begin{itemize}
+  \item Trees split the space into non-overlapping spaces
+  \item Used to assign/predict a \textit{class} following conditions
+  \item Optimally, final classification is homogenous
+\end{itemize}
+\end{frame}
+
+\section{What's in a tree?}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ What's in a tree? ]}}
+Trees have a very simple structure and are easy to understand:
+\begin{center} \includegraphics[width = 0.6\textwidth]{rparttree-1.png} \end{center}
+\pause
+\begin{itemize}
+  \item[] Trees have:
+  \begin{itemize}[<+->]
+    \item \textbf{Nodes} where splitting decisions are done
+    \item \textbf{Branches}  following conditions
+    \item \textbf{Leaves} are terminal nodes of the classification
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ What's in a tree? ]}}
+How to build a tree?
+\begin{center} \includegraphics[width = 0.6\textwidth]{rparttree-1.png} \end{center}
+\pause
+\begin{itemize}
+    \item Trees are based on recursive binary splits
+    \item Each node uses a threshold on a variable
+    \item Each node separates the observations in two sets
+\end{itemize}
+\end{frame}
+
+
+\section{Step-by-Step}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Example on a simple tree ]}}
+Let us see how this tree is constructed:\\
+\includegraphics[width = 0.9\textwidth]{rparttree-1.png} \\
+4 nodes leading to final leaves $\hookrightarrow$  Depth = 5
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Example on a simple tree ]}}
+The problem is a 2D space\\
+\includegraphics[width = 0.9\textwidth]{Step0-1.png}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Example on a simple tree ]}}
+\hfill \includegraphics[width = 0.3\textwidth]{rparttree-1.png}
+\begin{itemize}
+\item[]
+   \only<2> {\includegraphics[width = 0.8\textwidth]{Step0-1.png} \\ }
+   \only<2> {How to split the (Education,Income) space?}
+   \only<3> {\includegraphics[width = 0.8\textwidth]{Step1-1.png} \\ }
+   \only<3> {The first boundary decision line}
+   \only<4> { \includegraphics[width = 0.8\textwidth]{Step1-2.png} \\ }
+   \only<4> {The space below the line is classified as  rural}
+   \only<5> {\includegraphics[width = 0.8\textwidth]{Step2-1.png} \\ }
+   \only<5> {Second boundary decision line}
+   \only<6> {\includegraphics[width = 0.8\textwidth]{Step2-2.png} \\ }
+   \only<6> {The space on the left of the line is classified as  rural}
+   \only<7> {\includegraphics[width = 0.8\textwidth]{Step3-1.png} \\ }
+   \only<7> {Third boundary decision line}
+   \only<8> {\includegraphics[width = 0.8\textwidth]{Step3-2.png} \\ }
+   \only<8> {The space on the right of the line is classified as  Urban}
+   \only<9> {\includegraphics[width = 0.8\textwidth]{Step4-1.png} \\ }
+   \only<9> {Fourth boundary decision line}
+   \only<10>{\includegraphics[width = 0.8\textwidth]{Step4-2.png} \\ }
+   \only<10>{The space above the line is classified as  Urban}
+   \only<11>{\includegraphics[width = 0.8\textwidth]{Step4-3.png} \\ }
+   \only<11>{Finally, the remaining space is classified as rural}
+\end{itemize}
+\end{frame}
+
+\section{How to build a tree?}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ How to build a tree? ]}}
+ \hfill \includegraphics[width = 0.2\textwidth]{rparttree-1.png} \\
+
+We need several tools to build a tree:
+\pause
+\begin{itemize}[<+->]
+    \item  A method to choose the decision variable (one per node)
+    \item  A criterion to define best threshold
+    \item  A criterion to measure the quality of each split
+    \item  A way to decide when to stop (the terminal node becomes a leaf)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Tools to build a tree ]}}
+At each node, one can measure the \textit{purity} of each split
+\pause
+\begin{itemize}[<+->]
+    \item  Misclassification error rate
+    \item  The Gini coefficient measures the purity in each node $\kappa$
+$$
+  D_{\kappa} = \sum_{m=1}^M  \widehat{p}_{m \kappa} (1-\widehat{p}_{m
+  \kappa})
+$$
+  where $\widehat{p}_{m \kappa}$ is the proportion of class $m$ in
+  node $\kappa$.
+    \item  The entropy or information:
+ $$
+  D_{\kappa} =   - \sum_{m=1}^M  \widehat{p}_{m \kappa}  \log
+  \widehat{p}_{m \kappa}
+  $$
+  \item We expect that there is an Information gain from the splitting
+  $$Information\;Gain = Entropy_{\; Before} - Entropy_{\; After}$$
+  %\item[Note:] If in the each node there is only one class  represented, then $D_{\kappa}$ is zero.
+
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Example on a simple tree ]}}
+\hfill \includegraphics[width = 0.3\textwidth]{rparttree-1.png}
+\begin{itemize}
+\item[]
+  \only<2> {\includegraphics[width = 0.8\textwidth]{Step1-1.png} \\ }
+  \only<2> {First the boundary decision line}
+  \only<3> { \includegraphics[width = 0.8\textwidth]{Step1-2.png} \\ }
+  \only<3> {The space below the line is classified as  rural}
+  \only<4> { \includegraphics[width = 0.8\textwidth]{Step1-3.png} \\ }
+  \only<4> {Some "Urban" are classified as  rural $\hookrightarrow$ Impurity}
+  \only<5> { \includegraphics[width = 0.8\textwidth]{Step1-4.png} \\ }
+  \only<5> {Some "Rural" are classified as  Urban $\hookrightarrow$ Impurity}
+  \only<6> {\includegraphics[width = 0.8\textwidth]{Step2-1.png} \\ }
+  \only<6> {Second boundary decision line}
+  \only<7> {\includegraphics[width = 0.8\textwidth]{Step2-2.png} \\ }
+  \only<7> {The space on the left of the line is classified as  rural}
+  \only<8> {\includegraphics[width = 0.8\textwidth]{Step2-3.png} \\ }
+  \only<8> {Some "Urban" are classified as  Rural }
+  \only<9> {\includegraphics[width = 0.8\textwidth]{Step2-4.png} \\ }
+  \only<9> {Some "Rural" are classified as  Urban}
+  \only<10> {\includegraphics[width = 0.8\textwidth]{Step3-1.png} \\ }
+  \only<10> {Third boundary decision line}
+  \only<11> {\includegraphics[width = 0.8\textwidth]{Step3-2.png} \\ }
+  \only<11> {The space on the right of the line is classified as  Urban}
+  \only<12> {\includegraphics[width = 0.8\textwidth]{Step3-3.png} \\ }
+  \only<12> {Some "Rural" are classified as  Urban }
+  \only<13> {\includegraphics[width = 0.8\textwidth]{Step3-4.png} \\ }
+  \only<13> {"Urban" seem well classified in the remaining space}
+  \only<14> {\includegraphics[width = 0.8\textwidth]{Step4-1.png} \\ }
+  \only<14> {Fourth boundary decision line}
+  \only<15> {\includegraphics[width = 0.8\textwidth]{Step4-2.png} \\ }
+  \only<15> {The space above the line is classified as  Urban}
+  \only<16> {\includegraphics[width = 0.8\textwidth]{Step4-3.png} \\ }
+  \only<16> {Finally, the remaining space is classified as rural}
+  \only<17> {\includegraphics[width = 0.8\textwidth]{Step4-4.png} \\ }
+  \only<17> {Few "Rural" are classified as  Urban }
+  \only<18> {\includegraphics[width = 0.8\textwidth]{Step4-5.png} \\ }
+  \only<18> {Many "Urban" are classified as Rural }
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ How to build a tree? ]}}
+The construction is based on recursive binary splits
+\pause
+\begin{itemize}[<+->]
+    \item The goal is to increase the quality of the classification at the each stage
+    \item[$\hookrightarrow$] decrease the \textit{impurity} at each node
+    \item The outcome is "one" tree, not the perfect one
+    \item  There are many parameters that can be adjusted
+    \begin{itemize}[<+->]
+        \item The maximum \textit{depth} of the tree
+        \item The number of final leaves
+        \item The impurity balance between classes
+        \item The \textit{complexity parameter}
+        \item ...
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Tuning a Tree}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Trees can be complex ]}}
+Trees can decompose the space in very specific zones.\\
+ $\hookrightarrow$ Example with  the full set of variables\\
+
+\includegraphics[width = 0.9\textwidth]{Originaltree-1.png}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Selecting the \textbf{Depth} of a tree ]}}
+Using CV, we can select the \textit{maximum depth} parameter
+\pause
+\begin{itemize}[<+->]
+    \item[] \includegraphics[width = 0.9\textwidth]{depthtune-1.png}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Selecting the \textbf{Depth} of a tree ]}}
+\pause
+\begin{itemize}
+\item[] The resulting tree
+  \only<2> {\includegraphics[width = 0.8\textwidth]{depthtree-1.png} \\ }
+  \only<2> {Tree with optimal depth}
+  \only<3> {\includegraphics[width = 0.8\textwidth]{depthVIF-1.png} \\ }
+  \only<3> {Feature importance (also confusion matrix, kappa, etc..)}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Selecting the \textbf{Complexity} of a tree ]}}
+The complexity of a tree is a parameter $C_p$ governing the trade-off between tree size $|T|$ and its overall
+accuracy $D(T)$:
+$$
+D_{C_p}(T) = D(T) + C_p \cdot |T|
+$$
+\begin{itemize}[<+->]
+    \item  $D(T) =  \sum_{\kappa=1}^{K} D_{\kappa}$:  the total \emph{impurity} of the tree
+    \item $|T|$ is the number of terminal nodes of the tree
+    \item[$\hookrightarrow$] A model with $C_p$ = 0 will impose no constrains
+    \item[$\hookrightarrow$] A value of $C_p = 1$ only \textbf{one} terminal (and initial) node.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Selecting the \textbf{Complexity} of a tree ]}}
+\pause
+\begin{itemize}
+\item[] The result:
+   \only<2> {\includegraphics[width = 0.8\textwidth]{Cptune-1.png} \\ }
+   \only<2> {Grid search}
+   \only<3> {\includegraphics[width = 0.8\textwidth]{Cptree-1.png} \\ }
+   \only<3> {Final tree with optimal complexity parameter}
+  \only<4> {\includegraphics[width = 0.8\textwidth]{depthVIF-1.png} \\ }
+  \only<4> {Feature importance (also confusion matrix, kappa, etc..)}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ How to \textbf{prune} a tree? ]}}
+One can also \textit{prune} a tree
+\pause
+\begin{enumerate}[<+->]
+    \item Final trees may be too large and too complex
+    \item[$\hookrightarrow$] Risk of overfitting
+    \item Pruning techniques use the same criteria on each leave
+    \item[$\hookrightarrow$] Remove least important nodes
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Pruned tree ]}}
+After "\textit{pruning}":
+\pause
+\begin{itemize}[<+->]
+    \item[] \includegraphics[width = 0.9\textwidth]{prunedtree-1.png}
+    \item[$\hookrightarrow$] Easier to interpret \& no loss of accuracy
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Quiz time]}}
+\pause
+\begin{itemize}[<+->]
+  \item[]
+\end{itemize}
+\end{frame}
+
+\section{Wrap-up}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Takeaways]}}
+\begin{itemize}[<+->]
+\item Trees are simple and easy to interpret
+\item Each node is a split based on a threshold
+\item Splits are determined to maximize some measure of accuracy in each strata of the predictors' space
+\item Regression trees apply the same logic, with different criteria and values
+\item One can select the depth of a tree or its complexity and prune it
+\item Trees are very specific, not robust and prone to overfitting
+\item[$\hookrightarrow$] There are powerful methods using many trees...
+
+\end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+
+\end{document}
+%%%%%%%%%%%%%%% Last Slide %%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]%in case more than 1 slide needed
+\frametitle{References}
+    {\footnotesize
+    %\bibliographystyle{authordate1}
+    \bibliographystyle{apalike}
+    \bibliography{../../../Visualisation/Visu}
+    }
+\end{frame}
+\end{document}
+
+%\bibliographystyle{authordate1}
+%\bibliography{c:/Chris/Visualisation/Visu}
+%\end{frame}

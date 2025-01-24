@@ -1,0 +1,476 @@
+\documentclass[xcolor=x11names,compress]{beamer}
+%% General document
+\usepackage{graphicx, subfig}
+%% Beamer Layout
+\useoutertheme[subsection=false,shadow]{miniframes}
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+
+%%%%%%% Mes Packages %%%%%%%%%%%%%%%%
+%\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{dsfont} % Pour indicatrice
+\usepackage{url}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}   % For strike out text
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%remove the icon
+\setbeamertemplate{bibliography item}{}
+
+%remove line breaks
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+%% ------ MEs couleurs --------
+\definecolor{vert}{rgb}{0.1,0.7,0.2}
+\definecolor{brique}{rgb}{0.7,0.16,0.16}
+\definecolor{gris}{rgb}{0.7, 0.75, 0.71}
+\definecolor{twitterblue}{rgb}{0, 0.42, 0.58}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{siap}{RGB}{3,133, 200}
+
+
+%%%%%%%%%%%%%%%%% BEAMER PACKAGE %%%%%%%
+
+\setbeamercolor{itemize item}{fg=siap}
+%\setbeamercolor{itemize subitem}{fg=blue}
+%\setbeamercolor{itemize subsubitem}{fg=cyan}
+
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4}
+\setbeamercolor*{normal text}{fg=black,bg=white}
+\setbeamercolor*{alerted text}{fg=siap}
+\setbeamercolor*{example text}{fg=black}
+\setbeamercolor*{structure}{fg=black}
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10}
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10}
+
+% Set the header color to SIAP's color
+\setbeamercolor*{frametitle}{fg=siap}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+%% Add footer with logo
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}
+    \includegraphics[height=5ex]{SIAP_logo_Big.png}\hfill
+    \insertshortauthor\hfill\insertshorttitle\hfill  \textcolor{siap}{\textit{\insertframenumber}}
+  \end{beamercolorbox}%
+}
+% Path for the graphs
+\graphicspath{
+{Graphics/}{../../../../Visualisation/Presentations/Graphics/}
+{../../Visualisation/Presentations/Graphics/}
+{c:/Chris/Visualisation/Presentations/Graphics/Logos/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-0-SimpleTrees_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-1-DecisionTrees_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module2/M2-1-SimpleClassification_files/figure-html/}
+{c:/Gitmain/MLCourse/UNML/Module4/M4-2-RandomForest_files/figure-html/}
+{c:/Chris/UN-ESCAP/MyCourses2022/MLOS2022/Slides/Graphics/}
+}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%%%% Use it or not %%%%
+
+\title{\textcolor{siap}{Machine Learning for Official Statistics in Asia-Pacific countries \\ \vspace{0.5cm} }}
+
+\subtitle{\textcolor{brique}{\Large{Random Forest}}}
+\author{\textcolor{siap}{Christophe Bontemps}}
+\institute{ \includegraphics[height=9ex]{SIAP_logo_Big.png}}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\section{Introduction}
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[  From Trees to Forest  ]}}
+\textit{Trees} are methods for classification.\\
+ \includegraphics[width = 0.45\textwidth]{rparttree-1.png} \includegraphics[width = 0.45\textwidth]{Step4-3.png}
+\pause
+\begin{itemize}[<+->]
+  \item Trees are based on  recursive binary splits
+  \item The structure is simple and corresponds to regions in the variable's space
+  \item Each node is based on a the value of one variable  and a threshold
+  \item Trees can be very detailed and prone to \textbf{over fitting}
+\end{itemize}
+\end{frame}
+
+
+\section{The problem with trees}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Problems with  trees ]}}
+ \includegraphics[width = 0.45\textwidth]{rparttree-1.png} \includegraphics[width = 0.45\textwidth]{Step4-3.png}
+\pause
+\begin{itemize}
+  \item[] By structure:
+  \begin{itemize}[<+->]
+    \item Trees are splitting the variable's space into "rectangles"
+    \item Predictions using a tree may not be  very accurate
+    \item Trees are not robust to changes in the data
+    \item  Trees are prone to overfiting
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Problems with  trees  ]}}
+The decision trees  suffer from \textit{high variance}:
+\pause
+\begin{itemize}[<+->]
+    \item Take a sample and build a tree
+    \item Divide the sample in two parts and build a tree on each part
+    \item[$\hookrightarrow$] The two trees will likely be very different
+\end{itemize}
+\end{frame}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Example on a simple tree ]}}
+\pause
+\begin{itemize}
+\item[] Which tree do you trust? \\
+   \only<2> {\includegraphics[width = 0.8\textwidth]{treesvariance-1.png} \\ }
+   \only<2> {Tree using all observations}
+   \only<3> {\includegraphics[width = 0.8\textwidth]{treesvariance-2.png} \\ }
+   \only<3> {First tree with 50\% of observations}
+   \only<4> {\includegraphics[width = 0.8\textwidth]{treesvariance-3.png} \\ }
+   \only<4> {Second tree with 50\% of observations}
+   \only<5> { $\;$ \\}
+   \only<5> {Outcomes are different from one tree to another\\ }
+   \only<5> {\includegraphics[width = 0.45\textwidth]{treesvariance-2.png} \includegraphics[width = 0.45\textwidth]{treesvariance-3.png} \\ }
+   \only<5> {$\hookrightarrow$ Instability of the outcome ( or high variance)}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ How to use trees? ]}}
+Alternative to simple tree models:
+\pause
+\begin{itemize}[<+->]
+    \item Aggregating the results of trees can help
+    \item[$\hookrightarrow$]  "\emph{Bagging}"
+    \item Some trees may be too similar (correlated) and have to be "decorrelated" using random draws of the variable used
+    \item[$\hookrightarrow$]  "\emph{Random forest}"
+    \item Trees can be constructed \textit{sequentially}
+    \item[$\hookrightarrow$] "\emph{Boosting}"
+\end{itemize}
+\end{frame}
+
+
+
+\section{Bagging}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[Some simple mathematical tricks ]}}
+Aggregating the results of trees can help decrease the variance % \\ A bit of maths won't hurt:
+\pause
+\begin{itemize}[<+->]
+    \item  Intuitively, if $U_{i}, \ldots U_{B}$ are  iid with variance $\sigma^{2}$, then the average of these variables has a lower variance
+    \item[]
+\begin{eqnarray*}
+Var \left( \frac{1}{B} \sum_{i=1}^{B} U_i \right) &=&  \frac{\sigma^{2}}{B} \\
+            & < & \sigma^{2}
+\end{eqnarray*}
+    \item This is a simple principle that is used here
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Bagging ]}}
+\textit{Bagging} stands for \textit{Bootstrap Aggregating} uses a simple logic:
+\pause
+\begin{enumerate}[<+->]
+    \item Draw $B$ bootstrapped samples from the original sample
+    \item Construct $B$ trees, one on each sample
+    \item  \textit{Average} the result to get a prediction  with a lower variance
+    \item[]
+    \item[]In classification, we do not average but take the \emph{majority vote} rule
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ \textit{Bagging} ]}}
+\textit{Bagging} scheme:
+\includegraphics[width = 0.8\textwidth]{Bagging.JPG}\\
+\vfill
+\textcolor{gris}{\small Image from \href{http://2018.igem.org/Team:Jilin_China/Model/Screening_System}{igem.org}}
+%\includegraphics[width = 0.9\textwidth]{Ensemble_Bagging.svg.png}\\
+% \textcolor{gris}{\small Image from \textit{Par Sirakorn} (wikimedia.org) }
+
+\end{frame}
+
+% Out of bag prediction...
+
+\section{Random Forest}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ The problem with \textit{Bagging} ]}}
+ Bootstrapped (\textit{Bagging}) trees use the same set of variables
+\pause
+\begin{itemize}[<+->]
+    \item Aggregating  \textit{correlated} trees  will \textbf{not}  decrease variance
+    \item   Intuitively, if $U_{i}, \ldots U_{B}$ are with variance $\sigma^{2}$, \textbf{and cross-correlation} $\rho$,   then the average has a variance:
+\begin{eqnarray*}
+Var \left( \frac{1}{B} \sum_{i=1}^{B} U_i \right)  &=&   \rho \cdot \sigma^{2} + \frac{\sigma^{2}}{B}
+\end{eqnarray*}
+    \item This could be "high" if $\rho$ is "high"
+    \item[$\hookrightarrow$] \textit{Random forest }use a \textit{decorrelation} algorithm by adding \textit{\textbf{random}ness} in the set of variables used
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Random Forest]}}
+\textit{Random forest} use two mechanisms:
+\pause
+\begin{itemize}[<+->]
+    \item Bootstrap aggregating (\textit{bagging})
+    \item[$\hookrightarrow$] Construct $B$ trees, on $B$ bootstrapped samples
+    \item \textbf{Random} selection of variables (\textit{Feature sampling})
+    \item[$\hookrightarrow$] At each node, randomly select only \textbf{m} variables
+    \item The resulting predictor will have a lower variance
+    $$
+Var_{Random \; forest} = \rho \cdot \sigma^{2} + \frac{\sigma^{2}}{B}
+$$
+
+    \item[]Common practice ($p$ =\textit{ nb of variables}):
+    \begin{itemize}
+        \item $m \approx \sqrt{p}$ in classification
+        \item $m \approx p/3$ in regression
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Random Forest]}}
+\textit{Random forest} scheme:
+\begin{center}
+\includegraphics[width = 0.8\textwidth]{Random_forest_diagram_complete.png}\\
+\end{center}
+ \textcolor{gris}{\small Image from  \textit{Venkata Jagannath} (wikimedia.org) }
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Optimizing Random Forest]}}
+\textit{Random forest} are sensitive to several \textit{hyperparameters}
+\pause
+\begin{itemize}[<+->]
+    \item All the parameters used to build a \textit{tree}
+    \begin{itemize}[<+->]
+        \item \textit{Purity} criterion (Gini \textit{vs} Entropy)
+        \item Tree \textit{Depth}
+        \item \textit{Complexity} parameter $Cp$
+        \item $\cdots$
+    \end{itemize}
+    \item Parameters used to construct the \textit{Forest}
+    \begin{itemize}[<+->]
+        \item Number of variables $m$  used in each node
+        \item Number of trees
+        \item Minimum number of observations per leaves
+        \item $\cdots$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Random Forest on an Example]}}
+\pause
+\begin{itemize}
+\item[]
+   \only<2> {\includegraphics[width = 0.8\textwidth]{mtryANDaccuracy-1.png}\\  }
+   \only<2> {The impact of the number of variables (\textbf{\textit{m}}) on accuracy}
+   \only<3> {\includegraphics[width = 0.8\textwidth]{mtryANDkappa-1.png}\\ }
+   \only<3> {The impact of the number of variables (\textbf{\textit{m}}) on $kappa$ }
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Random Forest on an Example]}}
+The impact of the number of variables (\textbf{\textit{m}}):
+\pause
+\begin{itemize}[<+->]
+    \item[] \includegraphics[width = 0.4\textwidth]{mtryANDaccuracy-1.png} \includegraphics[width = 0.4\textwidth]{mtryANDkappa-1.png}
+    \item[] Why are the curves decreasing after a threshold?
+    \item The variance depends on $\rho \cdot \sigma^{2}$
+    \item[$\hookrightarrow$] \textit{Trees using similar variables are very similar (same predictions)} \\
+    $\nearrow  m \Longrightarrow \rho \nearrow$\\
+    \item Optimum for \textbf{3} (out of 7) regressors only at each node
+   \item[$\hookrightarrow$] Rule of thumb: $m \approx \sqrt{p}$
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Random Forest on an Example]}}
+\pause
+\begin{itemize}
+\item[]
+   \only<2> {\includegraphics[width = 0.8\textwidth]{ntreeANDaccuracy-1.png}\\  }
+   \only<2> {The impact of the number of trees on accuracy}
+   \only<3> {\includegraphics[width = 0.8\textwidth]{ntreeANDkappa-1.png}\\ }
+   \only<3> {The impact of the number of trees on $kappa$ }
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Random Forest on an Example]}}
+The impact of the number of trees:
+\pause
+\begin{itemize}[<+->]
+    \item[] \includegraphics[width = 0.4\textwidth]{ntreeANDaccuracy-1.png} \includegraphics[width = 0.4\textwidth]{ntreeANDkappa-1.png}
+    \item No clear optimum $\hookrightarrow$ Moderate number of trees is OK
+    \item The variance depends on $\frac{\sigma^{2}}{B}$ \\
+    $\nearrow  B \Longrightarrow \frac{\sigma^{2}}{B}  \searrow $\\
+   \item[$\hookrightarrow$] More tree reduces variance (up-to a certain point)
+\end{itemize}
+\end{frame}
+
+
+\section{Boosting}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Improvements]}}
+Trees can also grow differently:
+\pause
+ \begin{itemize}[<+->]
+    \item Random Forest grow \textit{independently}
+    \item "Vote" or average of the outcome from leaves
+    \item Trees can be constructed \textit{sequentially}
+    \item[$\hookrightarrow$] "\emph{Boosting}"
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Boosting]}}
+Boosting helps construct trees sequentially
+\pause
+ \begin{itemize}[<+->]
+    \item Based on weak learners
+    \item[$\hookrightarrow$] Very simple trees grow on each other's \textit{"mistakes"}
+    \item \textit{"Mistakes"} at tree nb $t$  are overweighed for tree nb $t+1$
+ \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Boosting]}}
+\pause
+\begin{itemize}
+\item[] \textit{Boosting} a tree (iterative process)\\
+   \only<2> {\includegraphics[width = 0.7\textwidth]{Boost0.png} \\ }
+   \only<2> {Two classes of observations: Orange and blue}
+   \only<3> {\includegraphics[width = 0.7\textwidth]{Boost1.png} \\ }
+   \only<3> {First weak learner}
+   \only<4> {\includegraphics[width = 0.7\textwidth]{Boost2.png} \\ }
+   \only<4> {Second weak learner. Misclassification overweighed}
+   \only<5> {\includegraphics[width = 0.7\textwidth]{Boost3.png} \\ }
+   \only<5> {Third weak learner. New misclassification overweighed}
+   \only<6> {\includegraphics[width = 0.7\textwidth]{BoostFinal.png} \\ }
+   \only<6> {Combining weak learners.}
+   \only<7> { \begin{center} \includegraphics[width = 0.3\textwidth]{Boost1.png}\includegraphics[width = 0.3\textwidth]{Boost2.png}\includegraphics[width = 0.3\textwidth]{Boost3.png} \\
+           \includegraphics[width = 0.3\textwidth]{BoostFinal.png} \end{center}  }
+   \only<7> {Combining weak learners. Classification  tree completed}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textcolor{brique}{[ Boosting]}}
+\textit{Boosting} has several features
+\pause
+ \begin{itemize}[<+->]
+    \item  Extremely powerful
+    \item  Based on simple trees (weak learners)
+     \item The "weight" placed on "mistakes" is important
+    \item[$\hookrightarrow$] Several choices \textit{gradient boosting}
+    \item Sequential procedure (no parallel computation)
+    \item[$\hookrightarrow$] \textit{Xgboosting}
+ \end{itemize}
+\end{frame}
+%
+%\begin{frame} % Cover slide
+%\frametitle{\textcolor{brique}{[Quiz time]}}
+%\pause
+%\begin{itemize}[<+->]
+%  \item[]
+%\end{itemize}
+%\end{frame}
+
+
+\section{Wrap-up}
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[Takeaways]}}
+\begin{itemize}[<+->]
+\item Random forest are simple and easy to interpret
+\item\textit{Random forest} use two mechanisms: \\
+ \textit{bagging} + (random) feature selection
+\begin{itemize}[<+->]
+    \item Bootstrap aggregating (\textit{bagging})
+    \item[$\hookrightarrow$] Construct $B$ trees, on $B$ bootstrapped samples
+    \item \textbf{Random} selection of variables (\textit{Feature sampling})
+    \item[$\hookrightarrow$] At each node, randomly select only \textbf{m} variables
+    \item The resulting predictor will have a lower variance
+ %   $$
+%Var_{Random \; forest} = \rho \cdot \sigma^{2} + \frac{\sigma^{2}}{B}
+%$$
+    \end{itemize}
+\item Many variations in r\emph{andom forest} exist (\textit{boosting}, \textit{gradient boosting}, \textit{Xgboosting} )
+\item Several parameters to adjust: Nb of trees,  nb of variables in each node, minimum number of obs. in leaves/nodes,  tree complexity, stopping rules, etc.
+\item  Implemented in many software!
+\end{itemize}
+\end{frame}
+
+
+\end{document}
+%%%%%%%%%%%%%%% Last Slide %%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]%in case more than 1 slide needed
+\frametitle{References}
+    {\footnotesize
+    %\bibliographystyle{authordate1}
+    \bibliographystyle{apalike}
+    \bibliography{../../../Visualisation/Visu}
+    }
+\end{frame}
+\end{document}
+
+%\bibliographystyle{authordate1}
+%\bibliography{c:/Chris/Visualisation/Visu}
+%\end{frame}

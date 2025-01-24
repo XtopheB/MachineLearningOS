@@ -1,0 +1,795 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\documentclass[xcolor=x11names,compress]{beamer}
+\documentclass[xcolor=x11names,compress]{beamer}
+%% General document
+\usepackage{graphicx, subfig}
+%% Beamer Layout
+\useoutertheme[subsection=false,shadow]{miniframes}
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+
+%%%%%%% Mes Packages %%%%%%%%%%%%%%%%
+%\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{dsfont} % Pour indicatrice
+\usepackage{url}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}   % For strike out text
+
+% Natbib for clean bibliography
+\usepackage[comma,authoryear]{natbib}
+
+%remove the icon
+\setbeamertemplate{bibliography item}{}
+
+%remove line breaks
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+%% ------ MEs couleurs --------
+\definecolor{vert}{rgb}{0.1,0.7,0.2}
+\definecolor{brique}{rgb}{0.7,0.16,0.16}
+\definecolor{gris}{rgb}{0.7, 0.75, 0.71}
+\definecolor{twitterblue}{rgb}{0, 0.42, 0.58}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{siap}{RGB}{3,133, 200}
+
+
+%%%%%%%%%%%%%%%%% BEAMER PACKAGE %%%%%%%
+
+\setbeamercolor{itemize item}{fg=siap}
+%\setbeamercolor{itemize subitem}{fg=blue}
+%\setbeamercolor{itemize subsubitem}{fg=cyan}
+
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4}
+\setbeamercolor*{normal text}{fg=black,bg=white}
+\setbeamercolor*{alerted text}{fg=siap}
+\setbeamercolor*{example text}{fg=black}
+\setbeamercolor*{structure}{fg=black}
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10}
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10}
+
+% Set the header color to SIAP's color
+\setbeamercolor*{frametitle}{fg=siap}
+
+%remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+%% Add footer with logo
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}
+    \includegraphics[height=5ex]{SIAP_logo_Big.png}\hfill
+    \insertshortauthor\hfill\insertshorttitle\hfill  \textcolor{siap}{\textit{\insertframenumber}}
+  \end{beamercolorbox}%
+}
+
+
+% Path for the graphs
+\graphicspath{{Graphics/}
+{../../../../Visualisation/Presentations/Graphics/}
+{../../Visualisation/Presentations/Graphics/}
+{c:/Gitmain/MLCourse/UNML/Module0/M0_files/figure-html/}
+{c:/Chris/UN-ESCAP/MyCourses2022/MLOS2022/Slides/Graphics/}
+{c:/Chris/UN-ESCAP/MyCourses2023/BigDataKostat/Slides/Graphics/}
+{c:/Chris/UN-ESCAP/MyCourses2024/WebScrapping/Graphics/}
+ }
+
+\title{\textcolor{siap}{Machine Learning for Official Statistics in Asia-Pacific countries \\ \vspace{0.5cm} }}
+
+\subtitle{\textcolor{brique}{\Large{Data Science Good Practices}}}
+\author{\textcolor{siap}{Christophe Bontemps}}
+\institute{ \includegraphics[height=9ex]{SIAP_logo_Big.png}}
+\date{}
+
+\begin{document}
+
+\section{Motivation}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}{Usual practice: Theory vs reality}
+\pause
+\begin{center}
+  \begin{itemize}
+        \only<1>{\includegraphics[width=0.8\textwidth]{Process1.png} \\
+        You scrapped data from a  website. Saving the file as Excel}
+        \only<2>{\includegraphics[width=0.8\textwidth]{Process2.png} \\ Send that file by email to your collaborators.}
+        \only<3>{\includegraphics[width=0.8\textwidth]{Process3.png} \\ Someone in your team can start writing some insights.}
+        \only<4>{\includegraphics[width=0.8\textwidth]{Process4.png} \\ You, or someone else, start an alaysis ...}
+        \only<5>{\includegraphics[width=0.8\textwidth]{Process5.png} \\ ... producing some outputs (graphics, tables, etc..)}
+        \only<6>{\includegraphics[width=0.8\textwidth]{Process6.png} \\ But wait... Oh no!  There a bug in the code!}
+        \only<7>{\includegraphics[width=0.8\textwidth]{Process7.png} \\ So here is version 2, and another Excel file}
+        \only<8>{\includegraphics[width=0.8\textwidth]{Process8.png} \\ And new insights ... }
+        \only<9>{\includegraphics[width=0.8\textwidth]{Process9.png} \\ ..and a new analysis based on the second Excell file}
+        \only<10>{\includegraphics[width=0.8\textwidth]{Process10.png} \\ And new outputs, new graphics, etc. }
+        \only<11>{\includegraphics[width=0.8\textwidth]{Process11.png} \\ Also, using other data sets (classifications, scanner data) }
+        \only<12>{\includegraphics[width=0.8\textwidth]{Process12.png} \\ Maybe someone adapts graphics to NSO reports style }
+        \only<13>{\includegraphics[width=0.8\textwidth]{Process13.png} \\ Finally,  copy/paste everything into the final report}
+        \only<14>{\includegraphics[width=0.8\textwidth]{Process14.png} \\ In the end, this what you have produced!}
+    \end{itemize}
+\end{center}
+\end{frame}
+
+\begin{frame}{Usual practice: In the end}
+
+ \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}[<+->]
+        \item Lots of files
+        \item Cut and paste is not a reliable, reproducible approach!
+        \item Your brain may remember (likely not!)...
+        \item[] ...all the steps...
+        \item[] .. in the right order..
+        \item[]...all of them !
+        \item Or use (bad) "\emph{tools}"
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+       \begin{itemize}
+       \item[] \only<1>{\includegraphics[width=0.8\textwidth]{Process14.png} }
+        \only<2>{\includegraphics[width=1.0\textwidth]{Process13.png} }
+        \only<3>{\includegraphics[width=1.0\textwidth]{Process15.png} }
+        \only<4>{\includegraphics[width=1.0\textwidth]{Process16.png} }
+        \only<5>{\includegraphics[width=1.0\textwidth]{Process17.png}}
+        \only<6>{\includegraphics[width=1.0\textwidth]{Process18.png}}
+        \only<7>{\includegraphics[width=1.0\textwidth]{Post-it.jpg} }
+    \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{Issues}
+
+\begin{frame}{What are the issues?}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}[<+->]
+        \item Errors due to cut and paste
+        \item Errors are difficult to track
+        \item Each operator has his/her own approach
+        \item Several versions of code may coexist
+        \item The steps aren't recorded
+        \item Reproducibility is not granted
+       % \item Quality control is hard
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+    \begin{itemize}
+        \item[]  \only<1-2>{\href{https://www.bbc.com/news/technology-54423988}{ \includegraphics[width=1.0\textwidth]{ExcelUK.png}}}
+         \only<3>{\includegraphics[width=1.0\textwidth]{FinalFinalVersion.png}}
+         \only<4-5>{\includegraphics[width=1.0\textwidth]{AnatomyOfaFile.png}}
+         \only<6>{\includegraphics[width=1.0\textwidth]{Reproducible.jpg}}
+         \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Fundamental Principles of Official Statistics}
+  \begin{columns}[T]
+    \begin{column}{0.6\textwidth}
+      \begin{itemize}[<+->]
+        \item Clear mention of the \textbf{processes} used to produce statistics
+        \item \emph{To retain trust in official statistics, the \textbf{statistical agencies need to decide} according to strictly professional considerations, including scientific principles and professional ethics, \textbf{on the methods and procedures} for the collection, processing, storage and presentation of statistical data.}
+      \item In short, \textbf{processes} are important!
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \includegraphics[width=\textwidth]{FundamentalPrinciplesOS.PNG}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{RAP}  % Better practices
+
+\begin{frame}{Why are Reproducible Analytical Pipelines good for you?}
+  \begin{columns}[T]
+    \begin{column}{0.7\textwidth}
+      \begin{itemize}[<+->]
+        \item It will make your (and your team's) (\emph{working}) life easier.
+         \item[$\hookrightarrow$]{ \small  Less confusion about where things are and how it works!}
+        \item It is an efficient way to work
+        \item It helps work faster
+        \item It helps make the process of making official statistics more robust!
+        \item It makes it easy to efficiently collaborate
+        %\item It will enhance your skills (and perhaps make you famous in your organization!)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.3\textwidth}
+    \begin{itemize}
+        \item[] \includegraphics[width=1.0\textwidth]{ReusablePipeline.png}
+    \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{What is A Reproducible Analytical Pipeline?}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+
+      \begin{itemize}[<+->]
+        \item[] \only<1>{   RAP could be thought of as an approach to working }
+        \item RAP is thus a robust process
+        \item It is (\emph{quite}) automated
+        \item It is (\emph{easily}) reproducible
+        \item It minimizes the time to find and fix mistakes when they do occur
+        \item It leads to fast processes\\ (see \href{https://github.com/Vanuatu-National-Statistics-Office/vnso-RAP-marketStats-materials}{Vanuatu Experience})
+        \item It builds trust
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+    \begin{itemize}
+        \item[] \includegraphics[width=1.0\textwidth]{ReusablePipeline.png}
+    \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{What does a RAP look like?}
+ \begin{center}
+  \begin{itemize}
+        \only<1>{\includegraphics[width=0.8\textwidth]{Pipeline1.png} \\ Idealy, Input (website) and output (report) are linked}
+        \only<2>{\includegraphics[width=0.8\textwidth]{Pipeline2.png} \\ Many steps are needed to create a report}
+        \only<3>{\includegraphics[width=0.8\textwidth]{Pipeline3.png} \\ All steps should be linked in a structured process}
+        \only<4>{\includegraphics[width=0.8\textwidth]{Pipeline4.png} \\ And only through code (Python, R), no copy/paste }
+        \only<5>{\includegraphics[width=0.8\textwidth]{Pipeline6.png} \\ There may be side-products, but with explicit output-input links}
+        \only<6>{\includegraphics[width=0.8\textwidth]{Pipeline7.png} \\ If needed, code can be updated (new versions)}
+        \only<7>{\includegraphics[width=0.8\textwidth]{Pipeline8.png} \\ And comments added for each change}
+        \only<8>{\includegraphics[width=0.8\textwidth]{Pipeline9.png} \\ Documentation on the process builds up with code changes}
+        \only<9>{\includegraphics[width=0.8\textwidth]{Pipeline10.png} \\ Other contributors are welcome!}
+    \end{itemize}
+\end{center}
+\end{frame}
+
+
+\section{Principles}
+
+\begin{frame}[<+->]
+   \frametitle{RAP principles:}
+   \pause
+    \begin{itemize}
+     \item Automation (\emph{as much as you can})
+     \item[$\hookrightarrow$] Avoid manual work %(prone to errors, time consuming)
+     \item Reusable (modular) code
+     \item[$\hookrightarrow$] Build blocs, update blocs, change blocs, test blocs
+     \item Transparency
+     \item[$\hookrightarrow$] Show what you, do what you say
+     \item Use open source tools
+     \item[$\hookrightarrow$] Free, reusable, huge community % (+ chatGPT compatible)
+     \item Version control
+     \item[$\hookrightarrow$] Easy to track code, easy to share, easy to update, ...
+     \item Good coding practices
+     \item[$\hookrightarrow$] Write for humans, not for machines
+     \item Testing
+     \item Peer-review
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+   \frametitle{RAP principles:}
+   \pause
+   \begin{itemize}[<+->]
+     \item[] \begin{center}
+             These principles translate into: \\ \vspace{0.5cm}
+             \textbf{Good Practices }\\ + \\
+             \textbf{Good Tools }
+    \end{center}
+     \item[$\hookrightarrow$] \vspace{2cm} We'll detail some of these practices and tools
+   \end{itemize}
+
+\end{frame}
+
+
+\subsection{Good practices}
+
+\begin{frame}
+\frametitle{\textbf{Good practices:} Organize your work }
+\textcolor{siap}{\textbf{Have a clear directory structure}}
+ \pause
+\begin{columns}[t]
+ \begin{column}{0.4\textwidth}
+
+    \begin{itemize}[<+->]
+   \item Separate files into data, code, docs, etc.
+   \item Make directories portable\\ (relative path)
+    \end{itemize}
+\end{column}
+  \begin{column}{0.6\textwidth}
+    \begin{center}
+    \begin{itemize}
+         \only<2>{ \includegraphics[width=0.5\textwidth]{WorkingDirectory.png} \\  }
+         \only<2>{\hfill \tiny{ \textcolor{gris}{Example of a well-organized directory structure.}}\\ }
+         \only<3-4>{\tiny{ \textbf{Usual}} \\ }
+         \only<3-4>{ \tiny{Mydata <- read.csv("c://document/2024/RAPCourse/Data/TradeData.csv")}  \\ }
+         \only<4>{\tiny{ \textbf{Better}}  \\}
+         \only<4>{ \tiny{Mydata <- read.csv("../Data/TradeData.csv")}  }
+    \end{itemize}
+    \end{center}
+  \end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textbf{Good practices:} Organize your work }
+\textcolor{siap}{\textbf{Use naming conventions: } \\ }
+For \textbf{files/code}\\
+\begin{columns}[t]
+ \begin{column}{0.3\textwidth}
+    \begin{itemize}[<+->]
+   \item Avoid  lazy names
+   \item Meaningful files names
+   \item Order of execution
+    \end{itemize}
+\end{column}
+  \begin{column}{0.2\textwidth}
+    \begin{itemize}
+       \item[]
+        \only<1-3>{ \small Usual \\ }
+        \only<1-3>{ \small \texttt{prog1.R}\\
+                    \texttt{prog2.R}\\
+                    \texttt{Stat.R}\\
+                    \texttt{progC.R}\\
+                    \texttt{progP.R} \\ }
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \begin{itemize}
+        \item[]
+        \only<2>{\small Better \\ }
+        \only<2>{ \small    \texttt{Scraping\_Data.R}\\
+                            \texttt{Cleaning\_Data.R}\\
+                            \texttt{Stats\_Tables.R}\\
+                            \texttt{Classification.R}\\
+                            \texttt{Price\_CPI.R} }
+        \only<3>{\small Even better \\ }
+        \only<3>{ \small
+                    \texttt{01\_Scraping\_data.R}\\
+                    \texttt{02\_Cleaning\_data.R}\\
+                    \texttt{03\_Classification.R}\\
+                    \texttt{04\_Stats\_Tables.R}\\
+                    \texttt{04\_Price\_CPI.R} }
+
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{\textbf{Good practices:} Organize your work }
+\textcolor{siap}{\textbf{Use naming conventions:} \\ }
+For \textbf{outputs}
+\begin{columns}[t]
+ \begin{column}{0.3\textwidth}
+    \begin{itemize}[<+->]
+   \item Avoid numbering
+   \item Explicit type of output
+    \end{itemize}
+\end{column}
+  \begin{column}{0.2\textwidth}
+    \begin{itemize}
+    \item[]
+        \only<1-2>{\small Usual \\ }
+        \only<1-2>{\small \texttt{Table1.pdf} \\
+                    \texttt{Table2.pdf} \\
+                    \texttt{Graph.jpg} \\
+                    \texttt{Model.csv} \\ }
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \begin{itemize}
+    \item[]
+        \only<2>{\small Better \\ }
+        \only<2>{ \small  \texttt{Stat\_Desc\_Table.pdf} \\
+                    \texttt{Price\_Stat\_Table.pdf}\\
+                    \texttt{Dress\_Prices\_Graphic.jpg}\\
+                    \texttt{All\_prices\_Results.csv} \\ }
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textbf{Good practices for automation} }
+\textcolor{siap}{\textbf{Keep track of the workflow:} \\  }
+ \begin{columns}[t]
+ \begin{column}{0.5\textwidth}
+    \begin{itemize}[<+->]
+     \item Cut and paste should be avoided
+     \item Every step of the process is coded
+     \item Manage (and draw) the workflow
+   \end{itemize}
+  \end{column}
+ \begin{column}{0.5\textwidth}
+    \begin{itemize}
+        \item[]
+        \only<1-3>{ \includegraphics[width=1.0\textwidth]{Workflow.png} \\ }
+        \only<1-3>{\hfill \tiny{ \textcolor{gris}{Example of a simple workflow.}} }
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textbf{Good practices for  automation} }
+\textcolor{siap}{\textbf{Keep track of the workflow:} \\  }
+
+Here is a workflow of a  web scraping process \\
+\begin{center}
+\href{https://github.com/sergegoussev/ESCAP_RAP_class/blob/main/docs/images/ads-process-overview-high-level-overview.drawio.svg}
+{\includegraphics[width=0.9\textwidth]{ESCAPWebScrappingPipeline.png}} \\
+\hfill \tiny{ \textcolor{gris}{Created by Serge Goussev.}}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{\textbf{Very good practices} }
+\textcolor{siap}{\textbf{Use a version control system  (Git/GitHub)}} \\
+\vspace{0.5cm}
+\begin{center}
+ \includegraphics[width=0.7\textwidth]{FileHistory.PNG} \\
+
+\large{\textbf{ More on Version Control later }}
+
+\end{center}
+\end{frame}
+
+\subsection{Good coding practices}
+
+\begin{frame}[<+->]
+\frametitle{\textbf{Good coding practices: Code for others} }
+\textcolor{siap}{\textbf{Program with style:}}
+          \begin{itemize}
+             \item[]  \only<1>{Use \emph{literate programming} }
+             \only<1>{ \begin{center}
+                    ``\textit{Let us concentrate rather on explaining to humans \\ what we want the computer to do}'' \\
+                    \hfill \textcolor{gris}{ D. Knuth (1984)}
+             \end{center}}
+
+             \only<2>{ \begin{center}
+                    ``\textit{($\cdots$) code is read much more often than it is written}''  \\
+                    \hfill \textcolor{gris}{  \href{https://peps.python.org/pep-0008/}{Guido van Rossum (2013 -PEP8)}}
+             \end{center}}
+         \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{\textbf{Good coding practices: Code for others} }
+\textcolor{siap}{\textbf{Program with style}} \\
+\begin{columns}[t]
+ \begin{column}{0.3\textwidth}
+    \begin{itemize}[<+->]
+   \item Avoid ambiguities
+   \item Avoid changing units
+    \end{itemize}
+\end{column}
+  \begin{column}{0.7\textwidth}
+    \begin{itemize}
+    \item[]
+        \only<1>{\scriptsize Usual \\ }
+        \only<1>{\scriptsize \texttt{sex <- ifelse(gender == "1001", 1, 2)} \\}
+        \only<1>{\small Better \\ }
+        \only<1>{\scriptsize \texttt{female <- ifelse(gender == "1001",1,0)} \\
+                                 \texttt{     male <- ifelse(gender != "1001",1,0)} \\ }
+         \only<2-4>{\scriptsize Usual \\ }
+        \only<2-4>{\scriptsize \texttt{gdp <- gdp/118.722 } \\
+                                \texttt{ } \\ }
+        \only<3>{\scriptsize Better \\ }
+        \only<3>{\scriptsize \texttt{gdp\_US <- gdp / 118.722}  }
+        \only<4>{\scriptsize Even better \\ }
+        \only<4>{\scriptsize \texttt{US\_Vanu\_exch\_rate <- 118.722} \\
+                                 \texttt{gdp\_US <- gdp / US\_Vanu\_exch\_rate}  }
+
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+%\end{document}
+
+%%%%%%
+\subsection{Modularity}
+\begin{frame}
+\frametitle{\textbf{Good practices: Modularity} }
+
+\textcolor{siap}{\textbf{Create reusable objects}}
+\begin{columns}[t]
+ \begin{column}{0.2\textwidth}
+    \begin{itemize}[<+->]
+       \item { \scriptsize Store values}
+       \item[]{ \scriptsize Avoid repetitions}
+       \item[]  % Empty item
+       \item { \scriptsize Use functions}
+       \item { \scriptsize Use independent blocks}
+    \end{itemize}
+\end{column}
+  \begin{column}{0.8\textwidth}
+    \begin{itemize}
+         \item[]
+        \only<1-2>{\scriptsize Usual \\ }
+        \only<1-2>{\scriptsize \texttt{Current\_Data <- subset(Mydata, year  ==2023)} \\}
+        \only<2>{\scriptsize Better \\ }
+        \only<2>{\scriptsize \texttt{Current\_year <- 2023 \\
+                        \texttt{Current\_Data <- subset(Mydata,} \\
+                       \hfill \texttt{year == Current\_year)}} \\ }
+        \only<3>{\scriptsize Usual \\ }
+        \only<3>{\scriptsize \texttt{data <- Mydata[Mydata\$export == "Beef", ]} \\
+                 \scriptsize \texttt{plot(data\$Year, data\$Value, } \\
+                 \hfill \scriptsize \texttt{ main =  "Export for Beef") \\ }
+                 \scriptsize \texttt{  } \\ }
+        \only<3>{\scriptsize \texttt{data <- Mydata[Mydata\$export == "Kava", ]} \\
+                \scriptsize \texttt{plot(data\$Year, data\$Value, } \\
+                 \hfill \scriptsize \texttt{ main =  "Export for Kava") \\ }
+                 \texttt{ ... } \\ }
+        \only<4>{\scriptsize Better \\ }
+        \only<4>{\scriptsize \texttt{ type <- "Beef"} \\
+                                \texttt{ } \\
+                                \texttt{  Mydata \%>\% } \\
+                                \texttt{    filter(exports == type) \%>\%}\\
+                                \texttt{    ggplot() + }\\
+                                \texttt{    aes(x = Year, y = Value) +}\\
+                                \texttt{    geom\_point() + }\\
+                                \texttt{    ggtitle(paste("Export for ", type)) }\\
+                                \texttt{ } \\ }
+         \only<5>{\scriptsize Even better \\ }
+         \only<5>{\scriptsize \texttt{Exports\_graphic <- function(type) \{ } \\
+                                \texttt{  Mydata \%>\% } \\
+                                \texttt{    filter(exports == type) \%>\%}\\
+                                \texttt{    ggplot() + }\\
+                                \texttt{    aes(x = Year, y = Value) +}\\
+                                \texttt{    geom\_point() + }\\
+                                \texttt{    ggtitle(paste("Export for ", type)) }\\
+                                \texttt{\} }\\
+                                \texttt{ } \\
+                                \texttt{Exports\_graphic("Beef")} \\
+                                \texttt{Exports\_graphic("Kava")   }}
+
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+ % Could we integrate https://nhsdigital.github.io/rap-community-of-practice/images/tight-loose-coupling.png into this slide?
+
+%\begin{frame}
+%\frametitle{Other principles}
+%    \begin{itemize}[<+->]
+%        \item Discuss with colleagues that may use your work
+%        \item Automatize as much as you can
+%        \item[$\hookrightarrow$] Reduces your brain's memory burden
+%        \item There are easy steps everybody can do
+%        \item[$\hookrightarrow$] Write small programs, one for each task
+%        \item Use open source program
+%        \item[$\hookrightarrow$] Easier to share, easier to automatize
+%        \item[$\hookrightarrow$] Also cost-effective
+%        \item Test your work regularly:
+%        \only<11>{\begin{center}
+%            \emph{``Do what has been said, say what has been done, and \\ check that what has been said has really been done !''}
+%         \end{center}}
+%        \only<12>{\begin{center}
+%            \emph{``\textbf{Code} what has been said, say what has been \textbf{coded}, and \\ check that what has been said has really been \textbf{coded}  !''}
+%         \end{center}}
+%    \end{itemize}
+%\end{frame}
+
+
+\section{Version Control}
+
+\begin{frame} % Cover slide
+\frametitle{Version Control keeps tracks of your work}
+Tracking three \textbf{W} questions:
+\begin{columns}[t]
+ \begin{column}{0.5\textwidth}
+ \begin{itemize}[<+->]
+ \item[] \textcolor{siap}{\textbf{W}}hat changes?
+ \item[] \textcolor{siap}{\textbf{W}}ho made the changes?
+ \item[] \textcolor{siap}{\textbf{W}}hen were the changes made?
+ \end{itemize}
+ \end{column}
+  \begin{column}{0.5\textwidth}
+    \begin{center}
+    \begin{itemize}
+        \only<1-4>{ \includegraphics[width=0.95\textwidth]{FileHistory.PNG} \\  }
+       \only<1-4>{\hfill  \textcolor{gris}{\tiny{Source: \href{https://the-turing-way.netlify.app/reproducible-research/vcs.html}{The Turing Way project}}}}
+    \end{itemize}
+    \end{center}
+  \end{column}
+\end{columns}
+\end{frame}
+
+
+
+\begin{frame}{Transparency, Accountability \& Reproducibility}
+    \begin{itemize}[<+->]
+        \item Version control provides a detailed history of changes
+        \item Each modification is attributed to a specific user
+        \item Promotes accountability, transparency \&  reproducibility
+    \end{itemize}
+\end{frame}
+
+\subsection{File evolution}
+
+\begin{frame}{File evolution  \textcolor{brique}{without Version Control}  }
+\begin{center}
+\begin{itemize}
+   \only<1> {\includegraphics[width = 1.0\textwidth]{FileChange1a.png} \\ }
+   \only<2> {\includegraphics[width = 1.0\textwidth]{FileChange2a.png} \\ }
+   \only<3> {\includegraphics[width = 1.0\textwidth]{FileChange3a.png} \\ }
+   \only<4> {\includegraphics[width = 1.0\textwidth]{FileChange4a.png} \\ }
+   \only<5> {\includegraphics[width = 1.0\textwidth]{FileChange5a.png} \\ }
+   \only<6> {\includegraphics[width = 1.0\textwidth]{FileChange6a.png} \\ }
+   \only<7> {\includegraphics[width = 1.0\textwidth]{FileChange7a.png} \\ }
+\end{itemize}
+\end{center}
+\end{frame}
+
+\begin{frame}{File evolution  \textcolor{brique}{without Version Control}  }
+Usual ways to keep track of changes:
+\pause
+\begin{columns}[t]
+\begin{column}{0.6\textwidth}
+\begin{itemize}[<+->]
+        \item New file after each change
+        \item[$\hookrightarrow$] Need to open each file to see the change
+        \item[$\hookrightarrow$] Names have to be explicit
+        \item Only the last file with lots of comments
+        \item Not fulfilling the 3 \textcolor{siap}{\textbf{W}}...
+
+    \end{itemize}
+ \end{column}
+  \begin{column}{0.4\textwidth}
+    \begin{center}
+    \begin{itemize}
+        \only<1-4>{ \includegraphics[width=1.0\textwidth]{FileLifeAll.png} \\  }
+        \only<5-6>{ \includegraphics[width=0.95\textwidth]{FileLifeFinalFinal.png} \\  }
+       % \only<7>{ \includegraphics[width=1.0\textwidth]{FileLifeAll.png} \\  }
+       % \only<7>{\hfill \includegraphics[width=0.5\textwidth]{FileLifeFinalFinal.png} \\  }
+
+    \end{itemize}
+    \end{center}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Commits}
+
+\begin{frame}{File evolution  \textcolor{brique}{with Version Control}  }
+You can see exactly what has been going on!
+\begin{center}
+\begin{itemize}
+   \only<1> {\includegraphics[width = 0.8\textwidth]{GitHubDiff.png} \\ }
+\end{itemize}
+\end{center}
+\end{frame}
+
+
+
+\begin{frame}{File evolution  \textcolor{brique}{with Version Control}  }
+Record a message (\emph{commit})  for each change!
+\begin{center}
+\begin{itemize}
+   \only<1> {\includegraphics[width = 1.0\textwidth]{FileLife1.png} \\ }
+   \only<2> {\includegraphics[width = 1.0\textwidth]{FileLife2.png} \\ }
+   \only<3> {\includegraphics[width = 1.0\textwidth]{FileLife3.png} \\ }
+   \only<4> {\includegraphics[width = 1.0\textwidth]{FileLife4.png} \\ }
+   \only<5> {\includegraphics[width = 1.0\textwidth]{FileLife5.png} \\ }
+   \only<6> {\includegraphics[width = 1.0\textwidth]{FileLife6.png} \\ }
+   \only<7> {\includegraphics[width = 1.0\textwidth]{FileLife7.png} \\ }
+\end{itemize}
+\end{center}
+\end{frame}
+
+\begin{frame}{The history of the file is recorded!}
+\begin{center}
+\begin{itemize}
+   \only<1-2> {Each version is documented (with \emph{commits}) \\ }
+   \only<1-2> {\includegraphics[width = 1.0\textwidth]{FileLifeHistoryEnd.png} \\ }
+   \only<3-4> {Each version embeds the full history!  }
+   \only<3-4> {\includegraphics[width = 1.0\textwidth]{FileLifeHistoryFull.png} \\ }
+\end{itemize}
+\end{center}
+\end{frame}
+
+\begin{frame}{Going back (\emph{revert}) is possible}
+\begin{center}
+\begin{itemize}
+   \only<1-2> {It is possible to review previous version... \\ }
+   \only<1-2> {\includegraphics[width = 1.0\textwidth]{FileLifeBack.png} \\ }
+   \only<3-4> {...to compare the changes...  }
+   \only<3-4> {\includegraphics[width = 1.0\textwidth]{FileLifeDiff.png} \\ }
+   \only<5-6> {... and to revert  to a  previous version... }
+   \only<5-6> {\includegraphics[width = 1.0\textwidth]{FileLifeRevert.png} \\ }
+   \only<7-8> {... or \emph{restart} from there as if nothing happened }
+   \only<7-8> {\includegraphics[width = 1.0\textwidth]{FileLifeRevert2.png} \\ }
+
+\end{itemize}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Version Control in a Nutshell }
+A Version Control systems:
+\begin{columns}[t]
+\begin{column}{0.8\textwidth}
+\begin{itemize}[<+->]
+    \item Keeps track of all changes
+    \item Allows you to ignore anything you don't want to version control (such as internal data) in the (\emph{.gitignore})
+    \item Allows reviewing stages of development
+    \item Allow collaborating on projects
+    \item Comes with different tools (Git, GitHub, GitLab, etc..)!
+    \item[$\hookrightarrow$]  GitLab can be set up on an internal NSO network.
+    \item Backups your work
+  \end{itemize}
+ \end{column}
+  \begin{column}{0.2\textwidth}
+    \begin{center}
+    \begin{itemize}
+        \only<1-6>{\includegraphics[width=0.5\textwidth]{github-mark.png} \\ \vspace{0.5cm}
+                    \includegraphics[width=0.5\textwidth]{gitlab-logo.png} \\ }
+    \end{itemize}
+    \end{center}
+  \end{column}
+\end{columns}
+\end{frame}
+
+
+
+\section{Takeaways}
+
+\begin{frame}{Towards Good Practices?  }
+\pause
+\begin{itemize}[<+->]
+    \item Good practices starts with our own practices
+    \item[$\hookrightarrow$]  KISS: Keep it Simple, Stupid
+    \item There many levels of RAP (a full spectrum)
+    \item[$\hookrightarrow$] Start small, be an advocate for others
+    \item[$\hookrightarrow$] Increase complexity when ready
+    \item Building a RAP is a collective process \\
+        %\item[$\hookrightarrow$] Sharing tools, processes \& feedback \\
+        \includegraphics[width=0.5\textwidth]{DecolonisingKnowledge.jpg}
+\end{itemize}
+\end{frame}
+
+
+\section{Resources}
+\begin{frame}{Useful resources}
+  \begin{itemize}
+  \item  \href{https://nhsdigital.github.io/rap-community-of-practice/introduction_to_RAP/what_is_RAP/}{NHS Community of Practice}
+  % \item  \href{https://github.com/sergegoussev/ESCAP_RAP_class/tree/main}{This course website} (created by Serge Goussev)
+   \item \href{https://github.com/Vanuatu-National-Statistics-Office/vnso-RAP-marketStats-materials}{Vanuatu Bureau of Statistics implementation of RAP}
+   \item \href{https://www.unsiap.or.jp/on_line/2024/RAP/flyer-RAP-Self-paced.pdf}{SIAP's (free) online RAP course}
+    \item The UK government RAP \href{https://ukgovdatascience.github.io/rap-website/index.html}{website}.
+    \item UK best practice \href{https://gss.civilservice.gov.uk/policy-store/quality-statistics-in-government/\#reproducible-analytical-pipelines-rap-}{documentation}.
+    \item A free RAP \href{https://www.udemy.com/course/reproducible-analytical-pipelines/}{course} to teach you all you need to know.
+    \item How the Data Science Campus sets its coding \href{https://datasciencecampus.github.io/coding-standards/}{standards}.
+    \item A new open-source \href{https://the-turing-way.netlify.com}{book} from the Alan Turing institute setting out how to do reproducible data science.
+  \end{itemize}
+\end{frame}
+
+
+
+
+\end{document}
+
+
