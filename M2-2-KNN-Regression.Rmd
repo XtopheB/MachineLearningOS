@@ -1,0 +1,542 @@
+---
+title: "k-Nearest Neighbors (k-NN) Regression"
+author: "Christophe Bontemps & Patrick Jonsson - SIAP"
+subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
+output:
+  pdf_document:
+    df_print: kable
+    toc: true
+    keep_tex: true
+    fig_width: 6.5
+    fig_height: 4
+  word_document:
+    toc: true
+  html_document:
+    df_print: paged
+    toc: true
+    keep_md: true
+    code_folding: show
+    toc_float: true
+    fig_width: 6.5
+    fig_height: 4
+always_allow_html: true
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r Knitr_Global_Options, include=FALSE, cache=FALSE}
+library(knitr)
+
+opts_chunk$set(warning = FALSE, message = FALSE, 
+               autodep = TRUE, tidy = FALSE, cache = TRUE)
+#opts_chunk$set(cache.rebuild=TRUE) 
+
+# My colors:
+SIAP.color <- "#0385a8"
+
+```
+
+`r if(knitr:::pandoc_to() == "latex") {paste("\\large")}` 
+
+## Tools
+
+We will use several packages to make our lives easier. Here is the list of packages we will use: 
+
+```{r}
+# Data Science packages
+library(tidyverse)
+library(jtools)
+
+# ML package 
+library(caret)
+
+# Pretty tables
+library(broom)
+library(xtable)
+library(kableExtra)
+
+```
+
+# Introduction
+This file serves as support for the "*Workshop on Machine Learning for Official Statistics in Asia-Pacific*". We use the same data set as  fro the introduction with a simple regression.   
+
+## Data
+
+We will begin by a look at consumption data and focus on relations between **total expenses** of a household and the **share of a good** in total consumption. Here we will study food share in SouthAfrica^[Data from A. Yatchew *Semiparametric  Regression for the Applied Econometrician*
+https://www.economics.utoronto.ca/yatchew/ ].
+
+```{r cache=TRUE}
+# We load the data from the SIAP's server
+SouthAfrica <-read.csv2("https://www.unsiap.or.jp/on_line/2025/MLO/SouthAfrica.csv")
+```
+In this data set there are **`r nrow(SouthAfrica)`** observations and  **`r ncol(SouthAfrica)`** variables. The most important are: 
+
+  - `ltexp` is expenditure in log
+  - `FoodShr` is the food share of the household
+  - The variables $z_{ij}$ are dummies for families with "i" adults and "j" kids.
+ 
+Now we select **only singles** households and reorder according to expenditure variable.
+
+```{r }
+Singles <- SouthAfrica[SouthAfrica$z10==1,4:5]  
+#Singles Subset
+Singles <- Singles[order(Singles$ltexp),1:2]
+```
+
+```{r }
+#Reorder so that log expenditure is in increasing order
+FoodShr <- Singles$FoodShr 
+ltexp   <- Singles$ltexp
+MyData <- data.frame(FoodShr,ltexp)
+```
+
+The data set of interest is now `MyData` and has  **`r nrow(MyData)`** observations and  **`r ncol(MyData)`** variables.
+
+
+
+
+
+## Visualizing the data set
+
+This is the scatterplot of our observations.
+
+```{r M0-Scatter }
+plot(FoodShr~ltexp, main="Scatter plot of Food Share vs Log(exp)", 
+     xlab="Log(Exp)",ylab = "FoodShare",
+    pch=19, cex = 0.5,col = "grey", frame.plot = FALSE )
+```
+
+## Linear Model
+.
+We have seen already what a simple linear model means to estimate the relationships between $x$ and $y$.
+$$y = x'\beta + \varepsilon$$
+ When we run a linear model, we have an output like this: 
+ 
+```{r }
+# Defining the regression of Y:  FoodShr on X:  ltexp
+lmFood <- lm(FoodShr~ltexp)
+print(summary(lmFood))
+```
+
+
+ But we can focus on the main relations and coefficients of the regression 
+ $$ FooShr =  \beta_o +\beta1 * ltexp + \varepsilon$$
+ 
+```{r}
+# We use the package boroom and function tidy (broom::tidy) to have results printed nicely 
+
+tidy(lmFood) %>%
+  kable(digits = 2, format = "simple", caption = "Regression Summary")
+```
+
+## Regression model
+
+Visualizing the estimated regression line. 
+
+
+```{r Scatter-lm}
+# Fit the linear model
+lmFood <- lm(FoodShr ~ ltexp, data = Singles)
+
+# Create predictions with confidence intervals
+lmpredictions <- Singles %>%
+  mutate(pred = predict(lmFood, newdata = Singles)) 
+
+# Plot with ggplot2
+ggplot(Singles, aes(x = ltexp, y = FoodShr)) +
+  geom_point(color = "grey", size = 1, alpha = 0.5) +  # Scatter plot
+  geom_line(aes(y = lmpredictions$pred), color = "blue", size = 0.7) +  # Regression line
+  labs(title = "Regression on the data set",
+       x = "Log(Exp)", y = "FoodShare") +
+  theme_minimal()
+
+```
+
+
+### Nearest-Neighbors (k-NN)
+
+We assume that $f(\cdot)$ is *smooth*
+
+* No jumps: continuous
+* No kinks: differentiable
+* Smooth enough: usually twice differentiable
+
+We want to estimate $f(\cdot)$. We talk about
+
+* **nonparametric regression**, since there is no parameter to be estimated.
+* **functional estimation**, since we estimate a function.
+
+Note that we could find a function $f(\cdot)$ that goes through every observation: this is called *interpolation*. There is actually an infinity of such functions, these are defined uniquely only at observations points.
+
+*Nearest-neighbors method* is close to *moving average*: we estimate $f(x)$ by averaging the $y_i$ corresponding to observations $x_i$ close to $x$. That's the idea of *smoothing*.
+Since the $x_i$ are ordered from smallest to largest. We define the estimate of $f(x_i)$ as
+\[
+\widehat{f} (x_i) = \frac{1}{k} \sum_{j \in \, k-nearest\, neighbours \, of \, x_i} y_j
+\]
+$k$ is the number of neighbors of $x_i$ taken into account in estimation. This method is  called *k-nearest neighbors* (K-NN for short).
+
+**Note**: Our estimator should be defined at any point $x$, even if $x$ is not an observation, so
+\[
+\widehat{f} (x) = \widehat{f} (x_i)
+\]
+where $x_i$ is the closest point to $x$.
+So we obtain a step function or *piecewise constant* function.
+
+### Playing with $k$
+
+Here we have `r length(ltexp)` observations in our dataset. We can choose different values for $k$ and see how this affect our estimation of $f(\cdot)$: 
+
+
+> Experiment with different number of nearest-neighbors. What do you get for a small number $k$? What happens when you increase $k$? 
+
+> Use the [online Shiny application to play with k-nn ](https://xtophedataviz.shinyapps.io/KnnExplore/)
+
+
+
+```{r, cache = FALSE}
+library(caret)
+# Change the value of k here!!
+k.choice = 250
+```
+
+#### k = `r k.choice`    
+
+Exercise: Use the **[online Shiny application to play with k-nn ](https://xtophedataviz.shinyapps.io/KnnExplore/)**  and  *try* with k = 10, 50, 100, 400, or 1000!
+
+
+```{r M0-knn-kchoice-points, cache = FALSE  }
+# Scatter plot
+plot(ltexp,FoodShr,type="n",
+     main= paste("K-NN regression with k=", k.choice,""),
+     sub = "Points used for a specific x", 
+     xlab="Log(Exp)", ylab = "FoodShare",
+    pch=19, cex = 0.5,col = "grey", frame.plot = FALSE )
+points(ltexp,FoodShr,
+    pch=19, cex = 0.5,col = "grey" )
+
+library(tidyverse)
+# for a specific x, highlight the points included in computation
+my.index <- 200  #  <-- value can be changed here
+my.x <- ltexp[my.index]
+my.y <- FoodShr[my.index]
+
+# computing x's nearest neighbors
+df <- as.data.frame(cbind(ltexp, FoodShr))
+df <- df %>%
+  mutate( dist = abs(ltexp - my.x) ) %>%
+  arrange(dist) %>%
+  slice(1:k.choice)
+
+points(df$ltexp,df$FoodShr,
+    pch=19, cex = 0.6,col = "pink" )
+# Original values
+points(my.x,0,
+    pch=15, cex = 0.6,col = "red" )
+
+points(my.x,my.y,
+    pch=18, cex = 0.9,col = "black" )
+
+
+```
+
+
+```{r M0-knn-kchoice-points-y, cache = FALSE  }
+plot(ltexp,FoodShr,type="n",
+     main= paste("K-NN regression with k=", k.choice,""),
+     xlab="Log(Exp)", ylab = "FoodShare",
+    pch=19, cex = 0.5,col = "grey", frame.plot = FALSE )
+points(ltexp,FoodShr,
+    pch=19, cex = 0.5,col = "grey" )
+
+
+# Plotting x's nearest neighbors
+points(df$ltexp,df$FoodShr,
+    pch=19, cex = 0.6,col = "pink" )
+
+# Computing estimation of Y using x's nearest neighbors
+my.y.hat <- mean(df$FoodShr)
+segments(0, my.y.hat, my.x, my.y.hat,
+         lw = 2, 
+         col= 'pink')
+
+# Original values
+points(my.x,0,
+    pch=15, cex = 0.6,col = "red" )
+
+points(my.x,my.y,
+    pch=18, cex = 0.9,col = "black" )
+
+# Some illustration on the graphic
+segments( my.x, 0, my.x, my.y.hat,
+         lw = 2, 
+         col= 'pink')
+points(my.x,my.y.hat,
+    pch=15, cex = 0.6,col = "red" )
+rug(df$FoodShr, side=2, col = "pink")
+
+points(0,my.y.hat,
+    pch=15, cex = 0.6,col = "red" )
+
+
+```
+
+
+```{r ekgeneric, cache = FALSE }
+#Estimating Food Shares using k-NN (CARET package)
+knn.est <- knnreg(FoodShr~ltexp, data = MyData, k = k.choice)
+```
+
+```{r M0-knn-kchoice-line, cache = FALSE  }
+plot(ltexp,FoodShr,type="n",
+     main= paste("K-NN regression with k=", k.choice,""),
+     xlab="Log(Exp)", ylab = "FoodShare",
+    pch=19, cex = 0.5,col = "grey", frame.plot = FALSE )
+points(ltexp,FoodShr,
+    pch=19, cex = 0.5,col = "grey" )
+
+# Defining the sequence of 200 points where we will estimate the k-NN line
+newx <- seq(from=min(ltexp),to=max(ltexp),
+            length.out = 200)
+# Estimating the k-NN regression line
+newy <-predict(knn.est, data.frame(ltexp = newx))
+# plotting the k-NN regression line
+lines(newx, newy, col= "blue")
+```
+
+
+
+
+```{r M0-knn-kchoice-full, cache = FALSE  }
+plot(ltexp,FoodShr,type="n",
+     main= paste("K-NN regression with k=", k.choice,""),
+     xlab="Log(Exp)", ylab = "FoodShare",
+    pch=19, cex = 0.5,col = "grey", frame.plot = FALSE )
+points(ltexp,FoodShr,
+    pch=19, cex = 0.5,col = "grey" )
+
+# Defining the sequence of 200 points where we will estimate the k-NN line
+newx <- seq(from=min(ltexp),to=max(ltexp),
+            length.out = 200)
+# Estimating the k-NN regression line
+newy <-predict(knn.est, data.frame(ltexp = newx))
+# plotting the k-NN regression line
+lines(newx, newy, col= "blue")
+
+
+# Plotting x's nearest neighbors
+points(df$ltexp,df$FoodShr,
+    pch=19, cex = 0.6,col = "pink" )
+
+# Original values
+points(my.x,0,
+    pch=15, cex = 0.6,col = "red" )
+
+points(my.x,my.y,
+    pch=18, cex = 0.9,col = "black" )
+
+# Some illustration on the graphic
+segments( my.x, 0, my.x, my.y.hat,
+         lw = 2, 
+         col= 'pink')
+points(my.x,my.y.hat,
+    pch=15, cex = 0.6,col = "red" )
+rug(df$FoodShr, side=2, col = "pink")
+
+points(0,my.y.hat,
+    pch=15, cex = 0.6,col = "red" )
+
+
+
+
+```
+
+
+
+### Residuals distribution
+
+
+```{r M0-knnhist-kchoice, cache = FALSE}
+# Computing the predictions for the observed x_i
+yhat <-predict(knn.est, data.frame(ltexp))
+knn.250.res <- yhat - FoodShr
+
+# We now plot the residual against the observed values of the variable FoodShr.
+hist(knn.250.res,prob=T,breaks=50, 
+     main = paste("Histogram of the residuals K-nn ( k=",k.choice,")") ,
+     sub = "Red curve is the density (estimated)",
+     xlab = "Food Share" , xlim=c(-1,1),
+     col = SIAP.color, border = "white")
+lines(density(knn.250.res,na.rm = TRUE),lwd=2,col = "darkred")
+
+```
+
+
+
+#### k = 10
+
+```{r ek0, cache = FALSE}
+k.choice = 10
+knn.est <- knnreg(FoodShr~ltexp, data = MyData, k = k.choice)
+```
+
+```{r M0-knn-10, cache = FALSE}
+
+plot(ltexp,FoodShr,type="n",
+     main= paste("K-NN regression with k=", k.choice,""),
+     xlab="Log(Exp)", ylab = "FoodShare",
+    pch=19, cex = 0.5,col = "grey", frame.plot = FALSE )
+points(ltexp,FoodShr,
+    pch=19, cex = 0.5,col = "grey" )
+
+# Defining the sequence of 200 points where we will estimate the k-NN line
+newx <- seq(from=min(ltexp),to=max(ltexp),
+            length.out = 200)
+# Estimating the k-NN regression line
+newy <-predict(knn.est, data.frame(ltexp = newx))
+# plotting the k-NN regression line
+lines(newx, newy, col= "blue")
+```
+
+### Residuals distribution
+
+```{r M0-knnhist-10, cache = FALSE}
+# Computing the predictions for the observed x_i
+yhat <-predict(knn.est, data.frame(ltexp))
+knn.10.res <- yhat - FoodShr
+
+# We now plot the residual against the observed values of the variable FoodShr.
+hist(knn.10.res,prob=T,breaks=50, 
+     main = paste("Histogram of the residuals K-nn ( k=",k.choice,")") ,
+     sub = "Red curve is the density (estimated)",
+     xlab = "Food Share" , xlim=c(-1,1),
+     col = SIAP.color, border = "white")
+lines(density(knn.10.res,na.rm = TRUE),lwd=2,col = "darkred")
+
+```
+#### k = 400
+
+```{r ek400, cache = FALSE}
+k.choice = 400
+knn.est <- knnreg(FoodShr~ltexp, data = MyData, k = k.choice)
+```
+
+```{r M0-knn-400 ,cache = FALSE}
+plot(ltexp,FoodShr,type="n",
+     main= paste("K-NN regression with k=", k.choice,""),
+     xlab="Log(Exp)", ylab = "FoodShare",
+    pch=19, cex = 0.5,col = "grey", frame.plot = FALSE )
+points(ltexp,FoodShr,
+    pch=19, cex = 0.5,col = "grey" )
+
+# Defining the sequence of 200 points where we will estimate the k-NN line
+newx <- seq(from=min(ltexp),to=max(ltexp),
+            length.out = 200)
+# Estimating the k-NN regression line
+newy <-predict(knn.est, data.frame(ltexp = newx))
+# plotting the k-NN regression line
+lines(newx, newy, col= "blue")
+```
+
+### Residuals distribution
+
+```{r M0-knnhist-400, cache = FALSE}
+# Computing the predictions for the observed x_i
+yhat <-predict(knn.est, data.frame(ltexp))
+knn.400.res <- yhat - FoodShr
+
+# We now plot the residual against the observed values of the variable FoodShr.
+hist(knn.400.res,prob=T,breaks=50, 
+     main = paste("Histogram of the residuals K-nn ( k=",k.choice,")") ,
+     sub = "Red curve is the density (estimated)",
+     xlab = "Food Share" , xlim=c(-1,1),
+     col = SIAP.color, border = "white")
+lines(density(knn.10.res,na.rm = TRUE),lwd=2,col = "darkred")
+
+```
+
+## Comparing the residuals distribution
+
+```{r M0-knnhist-all}
+res.all <- as.data.frame(cbind(knn.10.res, knn.250.res, knn.400.res))
+boxplot(res.all,
+        ylab ="Residuals", 
+        xlab = "Models",
+        ylim = c(-0.5, 0.5),
+        # outline=FALSE,   
+        col = SIAP.color,
+        frame.plot = FALSE,
+        horizontal = FALSE, 
+        names = c("k-nn (10)", "k-nn (250)", "k-nn (400)") )
+
+
+```
+
+
+### Mean Squared Error
+*The MSE* is a **theoretical^[One can estimate the MSE on the sample when $y_i$ is observed and then $$MSE =  \frac{1}{n} \; \sum_ {i=1}^n \bigl( y_i - \widehat f(x_i) \bigr)^2 $$]** measure of the precision for any estimator, it is defined as the Expectation of the distance between the estimated $\widehat f(x_i)$ and true (unknown) value $f(x_i)$ for a particular observation $i$: 
+
+$$
+E\left[\widehat{f} (x_i) - f (x_i)\right]^{2}
+$$
+
+It can be shown that the MSE can be decomposed into 2 terms: 
+
+
+$$ MSE= E\left[ \bigl(\widehat{f} (x_i) - f (x_i)\bigr)^{2} \right]= 
+\left\{E \left[\widehat{f} (x_i) - f(x_i)\right]\right\}^{2}
++
+Var \left[ \widehat{f}(x_i)  \right]$$
+
+*The MSE* is a measure of the precision for any estimator, and we always have
+
+$$MSE = Bias^{2} + Variance $$
+Since the *true* function $f(\cdot)$ is unknown, we cannot estimate the first term that depends on the *true$ fucntion $f(\cdot)$ (more precisely on its  second derivative) and since we cannot assume we obtain an unbiased estimator, the MSE for our nonparametric k-NN estimator is:
+$$
+MSE_{K-NN}= E\left[ \widehat{f} (x_i) - f (x_i)\right]^{2} \approx
+      \left\{f^{''} (x_i) \frac{1}{24} \left( \frac{k}{n} \right)^{2} \right\}^{2}
++
+    \frac{1}{k} \sigma^{2}_{\varepsilon}
+\, .
+$$
+
+### Bias-Variance Trade-Off
+
+To minimize the MSE, we should balance squared bias and variance. from this expression we can learn that: 
+* bias increases when k increases
+* variance decreases when k increases
+and alos that 
+* bias decreases when n increases 
+
+Then , we should choose $k$ such that the squared bias is of the same order than the variance. One can show that the **optimal $k$** is: 
+$k^{*} \propto n^{4/5}$
+
+
+
+### Under/Over Smoothing
+
+* *Undersmoothing* occurs is when we use too small a $k$.
+
+Think about $k=1$: we have *interpolation*.
+More generally undersmoothing occurs when we obtain a very **wiggly** curve: bias is small (we are near each observation), but variance is large (curve is wiggly).
+
+* *Oversmoothing* is when we use too large small $k$.
+
+Think about $k=n$: the estimator $\widehat{f} (x) = \bar{y}$ for any $x$! More generally oversmothing occurs when we obtain too flat a curve: variance is small, but bias is large.
+
+> In practice, it may be tricky to determine the right number of neighbors that is the right amount of smoothing!
+
+
+# Wrap-up
+- ML is about estimating an unknown function $f(\cdot)$ 
+- To estimate regression models, we have to solve an **optimization problem**
+- With "big data", we can go over a simple linear model: e.g. polynomial models or nonparametric mode such as *k-NN* regression.
+- There is a *bias-variance trade-off*: a more complex model allows to estimate the regression more accurately, but introduces more variability in estimation.
+- **Theory** tells us exactly how to balance squared bias and variance but it **does not tell us how to choose the model in practice!**
+
+
+
