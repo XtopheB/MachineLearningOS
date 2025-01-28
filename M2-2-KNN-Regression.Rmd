@@ -515,8 +515,6 @@ and alos that
 Then , we should choose $k$ such that the squared bias is of the same order than the variance. One can show that the **optimal $k$** is: 
 $k^{*} \propto n^{4/5}$
 
-
-
 ### Under/Over Smoothing
 
 * *Undersmoothing* occurs is when we use too small a $k$.
