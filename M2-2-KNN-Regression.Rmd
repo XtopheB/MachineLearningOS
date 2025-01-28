@@ -1,5 +1,9 @@
 ---
+<<<<<<< HEAD
 title: "k-Nearest Neighbors (k-NN) Regression"
+=======
+title: "K-NN Regression"
+>>>>>>> 1e7e53d0e37515ba033dc60d51239512d99852f6
 author: "Christophe Bontemps & Patrick Jonsson - SIAP"
 subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
 output:
@@ -192,10 +196,14 @@ So we obtain a step function or *piecewise constant* function.
 Here we have `r length(ltexp)` observations in our dataset. We can choose different values for $k$ and see how this affect our estimation of $f(\cdot)$: 
 
 
+<<<<<<< HEAD
 > Experiment with different number of nearest-neighbors. What do you get for a small number $k$? What happens when you increase $k$? 
 
 > Use the [online Shiny application to play with k-nn ](https://xtophedataviz.shinyapps.io/KnnExplore/)
 
+=======
+> Experiment with different number of nearest-neighbors. What do you get for a small number $k$? What happens when you increase $k$? Use the [online Shiny application to play with k-nn ](https://xtophedataviz.shinyapps.io/KnnExplore/)
+>>>>>>> 1e7e53d0e37515ba033dc60d51239512d99852f6
 
 
 ```{r, cache = FALSE}
@@ -204,12 +212,20 @@ library(caret)
 k.choice = 250
 ```
 
+<<<<<<< HEAD
 #### k = `r k.choice`    
 
 Exercise: Use the **[online Shiny application to play with k-nn ](https://xtophedataviz.shinyapps.io/KnnExplore/)**  and  *try* with k = 10, 50, 100, 400, or 1000!
 
 
 ```{r M0-knn-kchoice-points, cache = FALSE  }
+=======
+#### k = `r k.choice`    (*try with k = 10, 50, 100, 400, or 1000*)
+
+
+```{r M0-knn-kchoice-points, cache = FALSE  }
+
+>>>>>>> 1e7e53d0e37515ba033dc60d51239512d99852f6
 # Scatter plot
 plot(ltexp,FoodShr,type="n",
      main= paste("K-NN regression with k=", k.choice,""),
@@ -225,6 +241,10 @@ my.index <- 200  #  <-- value can be changed here
 my.x <- ltexp[my.index]
 my.y <- FoodShr[my.index]
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1e7e53d0e37515ba033dc60d51239512d99852f6
 # computing x's nearest neighbors
 df <- as.data.frame(cbind(ltexp, FoodShr))
 df <- df %>%
@@ -463,6 +483,7 @@ lines(density(knn.10.res,na.rm = TRUE),lwd=2,col = "darkred")
 
 ```{r M0-knnhist-all}
 res.all <- as.data.frame(cbind(knn.10.res, knn.250.res, knn.400.res))
+<<<<<<< HEAD
 boxplot(res.all,
         ylab ="Residuals", 
         xlab = "Models",
@@ -474,6 +495,12 @@ boxplot(res.all,
         names = c("k-nn (10)", "k-nn (250)", "k-nn (400)") )
 
 
+=======
+boxplot(res.all, ylim = c(-0.5, 0.5),outline=FALSE,   
+        frame.plot = FALSE, horizontal = FALSE, 
+        names = c("k-nn (10)", "k-nn (250)", "k-nn (400)") )
+
+>>>>>>> 1e7e53d0e37515ba033dc60d51239512d99852f6
 ```
 
 
@@ -515,6 +542,11 @@ and alos that
 Then , we should choose $k$ such that the squared bias is of the same order than the variance. One can show that the **optimal $k$** is: 
 $k^{*} \propto n^{4/5}$
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1e7e53d0e37515ba033dc60d51239512d99852f6
 ### Under/Over Smoothing
 
 * *Undersmoothing* occurs is when we use too small a $k$.
