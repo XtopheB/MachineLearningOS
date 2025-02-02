@@ -79,6 +79,7 @@
 \graphicspath{{Graphics/}
 {../../../../Visualisation/Presentations/Graphics/}
 {../../Visualisation/Presentations/Graphics/}
+{c:/GitMain/MachineLearningOS/M3-Regression_files/figure-html/}
 {c:/Gitmain/MLCourse/UNML/Module3/M3-Regression_files/figure-html/}
 {c:/Gitmain/MLCourse/UNML/Module2/M2-1-SimpleClassification_files/figure-html/}
 {c:/GitMain/MLCourse/UNML/Module0/M0_files/figure-html/}
@@ -175,15 +176,35 @@ $$
 \pause
 \begin{itemize}
 \item Example on a regression model with few variables\\
-  \only<2> {\includegraphics[width = 0.8\textwidth]{RegBank.JPG} \\ }
+$y$ is the \textbf{salary} of the bank account owner
+ \item Trans = Nb of transactions in 2020
+ \item HighTrans = Nb of high value transactions in 2020
+ \item Checks = Nb of Checks in 2020
+ \item Years = Nb of years at the bank
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame} % Cover slide
+\frametitle{\textcolor{brique}{[ Linear Regression: Example ]}}
+\pause
+\begin{itemize}
+\item Example on a regression model with few variables\\
   \only<2> {Initial regression with original values}
-  \only<3> { \includegraphics[width = 0.8\textwidth]{RegBankCentered.JPG} \\ }
+  \only<2> {\includegraphics[width = 0.8\textwidth]{RegBank.JPG} \\ }
   \only<3> {Regression with centred variables}
+  \only<3> { \includegraphics[width = 0.8\textwidth]{RegBankCentered.JPG} \\ }
+  \only<4> {Regression with scaled variables \\ }
   \only<4> {\includegraphics[width = 0.8\textwidth]{RegBankScaled.JPG} \\ }
-  \only<4> {Regression with scaled variables}
-  \only<5> {The goal is to have \textit{comparable} effects (same range)\\ }
-  \only<5> {\includegraphics[width = 0.8\textwidth]{visualreg-1.png} \\ }
-  \only<5> {Visual regression with scaled variables}
+  \only<5> {Visual representation: Regression with \textbf{unscaled} variables \\ }
+  \only<5> {\includegraphics[width = 0.8\textwidth]{visualregIni-1.png} \\ }
+  
+  \only<6> {Visual representation: Regression with \textbf{scaled} variables \\ }
+  \only<6> {\includegraphics[width = 0.8\textwidth]{visualreg-1.png} \\ }
+  \only<7> {The goal is to have \textit{comparable} effects (same range)\\ }
+  \only<7> {\includegraphics[width = 0.45\textwidth]{visualregIni-1.png} \includegraphics[width = 0.45\textwidth]{visualreg-1.png} \\ }
+  \only<7> {\emph{Unscaled} variables \hfill \emph{scaled} variables \\ }
 \end{itemize}
 \end{frame}
 
@@ -590,13 +611,13 @@ In Machine Learning, focus on prediction  (RMSE)
 
 \section{wrap-up}
 
-\begin{frame} % Cover slide
-\frametitle{\textcolor{brique}{[Quiz time]}}
-\pause
-\begin{itemize}[<+->]
-  \item[]
- \end{itemize}
-\end{frame}
+%\begin{frame} % Cover slide
+%\frametitle{\textcolor{brique}{[Quiz time]}}
+%\pause
+%\begin{itemize}[<+->]
+%  \item[]
+% \end{itemize}
+%\end{frame}
 
 
 

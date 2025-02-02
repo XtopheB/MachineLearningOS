@@ -201,7 +201,6 @@
 
 \begin{frame} % Cover slide
 \frametitle{Why estimating $f(x)$?}
-
 \pause
 
  \begin{itemize}
@@ -234,15 +233,13 @@
  \end{itemize}
 \end{frame}
 
-
-
 \begin{frame} % Cover slide
 \frametitle{How to estimate $f(\cdot)$?}
  \begin{itemize}
   \item<+-> Parametric methods
    \begin{itemize}
       \item<+->[] Specify a form for $f(\cdot)$, for example linear:
-      \item<+->[] $$y = \beta_0 + \beta_1 x_ + \varepsilon$$
+      \item<+->[] $$y = \beta_0 + \beta_1 x + \varepsilon$$
       %\item<+-> The problem is then to estimate $ \beta_0$ and $\beta_1 \; \hookrightarrow $ ($\widehat \beta_0, \widehat \beta_1$  are the estimates)
       \item<+-> The goal is to find the line that is  \textbf{minimizing} the distance to the observed points $(x_i, y_i)$.
                 The distance is computed as the Mean Square Error (MSE): $$ MSE(\beta_0, \beta_1) = \frac{1}{n} \sum_{i=1}^{n} \bigl(y_i - (\beta_0 + \beta_1 x_i)\bigr)^2 $$
@@ -283,7 +280,6 @@ ltexp &\textbf{ $-0.20^{***}$ }& 0.01 & -31.84 & 0\\
  The quality of the adjustment may be measured by the $R^2$ = 0.478
 
 \end{frame}
-
 
 
 \section{Machine learning}
@@ -330,7 +326,7 @@ The classical approach
  \begin{itemize}[<+->]
     \item Imagine you use a linear model on a data set:  $$y = \beta_0 + \beta_1 x_ + \varepsilon$$
     \item  Is it good for predicting?
-    \item Is it better than a quadratic model? $y = \beta_0 + \beta_1 x_ + + \beta_2 x^2+ \varepsilon$
+    \item Is it better than a quadratic model? $y = \beta_0 + \beta_1 x + \beta_2 x^2+ \varepsilon$
     \item[$\hookrightarrow$] How could we know how good/bad it is?
     \item Let's play:  \emph{Manual} Cross-validation!
     \item[]  \href{https://xtophedataviz.shinyapps.io/MLRegressionExample/}{\includegraphics[width = 0.6\textwidth]{CrossValidationRegression.png}}
@@ -429,12 +425,12 @@ Using resampling methods to  estimate the error on the prediction
 \pause
 \begin{itemize}[<+->]
 %\item Machine Learning builds upon "classical" statistics
-\item To \textit{understand }the data, we use linear, polynomial, nonparametric models ($k$-NN) or other complex methods (including those for classification)
-\item More complex models $\nearrow$ accuracy, but $\rightarrow$ variability (variance) in the estimation
+\item To \textit{understand }the data, we use linear, polynomialor other complex methods (k-NN, see later)
+\item More complex models $\nearrow$ accuracy, but $\nearrow$ variability (variance) in the estimation
 \item  There is a unavoidable  \textbf{bias-variance} trade-off
 \item Theory helps understanding but not in choosing the right model
 \item The ($train + validation$) sets approach is central in machine learning% The only one that helps in practice
-\item[$\hookrightarrow$] In a machine learning framework, the efficiency of the prediction will guide the choices, not the statistical properties! % The only one that helps in practice
+\item[$\hookrightarrow$] In a machine learning framework, the **efficiency of the prediction** will guide the choices, not the statistical properties! % The only one that helps in practice
 \end{itemize}
 \end{frame}
 

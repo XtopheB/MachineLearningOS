@@ -456,18 +456,21 @@ Accuracy is not the panacea and may be misleading
   \item[] A higher $t_0$ will allocate less observations to the $y=1$ category (Urban)
   \item[] A lower $t_0$ will allocate more observations to the $y=1$ category
   \item The choice of $t_o$ should be done according to the data and observed classes repartition
-  \item \textit{Specificit}y and \textit{Sensitivity} are affected by $t_0$
+  \item $t_o$ affects the whole classification
+  \item[$\hookrightarrow$] Confusion matrix
+  \item[$\hookrightarrow$] \textit{Specificit}y and \textit{Sensitivity} 
 \end{itemize}
 \end{frame}
 
 \begin{frame} % Cover slide
 \frametitle{\textcolor{brique}{[The ROC Curve ]}}
+We can use the ROC to select $t_0$, but this requires additional efforts:
 \pause
  \begin{itemize}[<+->]
   \item We want the \textit{Specificit}y and \textit{Sensitivity} to be both \textbf{maximized} (ideally both would be 1)
-  \item The ROC curve help visualize the best choice
+  \item Often specificity and sensitivity go in opposite directions
+  \item The ROC curve help visualize the best choice 
   \item[] \textit{Be careful of the axes }
-  \item
 \end{itemize}
 \end{frame}
 
@@ -497,19 +500,19 @@ Accuracy is not the panacea and may be misleading
 \frametitle{\textcolor{brique}{[AUC as a measure of fit]}}
 \end{frame}
 
-\section{Best classifier}
-
-\begin{frame} % Cover slide
-\frametitle{\textcolor{brique}{[ Train \& Validation set ]}}
-\end{frame}
-
-\begin{frame} % Cover slide
-\frametitle{\textcolor{brique}{[ CV on measures of fit ]}}
-\end{frame}
-
-\begin{frame} % Cover slide
-\frametitle{\textcolor{brique}{[ Model comparison]}}
-\end{frame}
+%\section{Best classifier}
+%
+%\begin{frame} % Cover slide
+%\frametitle{\textcolor{brique}{[ Train \& Validation set ]}}
+%\end{frame}
+%
+%\begin{frame} % Cover slide
+%\frametitle{\textcolor{brique}{[ CV on measures of fit ]}}
+%\end{frame}
+%
+%\begin{frame} % Cover slide
+%\frametitle{\textcolor{brique}{[ Model comparison]}}
+%\end{frame}
 
 \section{wrap-up}
 
