@@ -1272,7 +1272,7 @@ boxplot(perf$values[c("ridge~RMSE", "lasso~RMSE", "enet~RMSE")],
         frame.plot = FALSE)
 ``` 
 
-Lasso and elastic net seems to perform better than ridge regression, with almost the same set of  variables. 
+LASSO - and elastic net since here elastic net reduces to LASSO in this example - seems to perform better than ridge regression, with almost the same set of  variables. 
 
 # Wrap-up
 
