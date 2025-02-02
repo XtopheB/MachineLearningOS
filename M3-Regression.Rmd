@@ -7,6 +7,7 @@ output:
   html_document:
     df_print: paged
     toc: yes
+    toc_float: true
     keep_md: yes
     code_folding: show
     fig_width: 6.5
@@ -203,6 +204,16 @@ summ(reglin, center = FALSE)$coeftable %>%
   kable(digits=3) %>% 
   kable_styling()
 ```
+
+We can use a specific graphic to visualize the coefficients and associated standard errors
+
+
+```{r visualregIni}
+
+plot_summs(reglin, scale = FALSE,
+           plot.distributions = FALSE  )
+```
+
 
 ### Centering
 
@@ -841,8 +852,13 @@ stopCluster(cl)
 ```{r LeapFPlot}
 ggplot(leapF)+
   ggtitle("Forward Selection") +
+  scale_x_continuous( breaks =seq(0, rcvTunes, 2)) + 
+  expand_limits(y = 0.45) +
   theme_minimal()
+```
 
+
+```{r LeapFTable}
 #Regression results
 coef(leapF$finalModel,leapF$bestTune$nvmax) %>%
   kable(digits=2) %>%
@@ -868,8 +884,13 @@ stopCluster(cl)
 ```{r LeapBPlot}
 ggplot(leapB)+
   ggtitle("Backward Selection") +
+  scale_x_continuous( breaks =seq(0, rcvTunes, 2)) + 
+  expand_limits(y = 0.45) +
   theme_minimal()
+```
 
+
+```{r LeapBTable}
 # Regression results
 coef(leapB$finalModel,leapB$bestTune$nvmax)  %>%
   kable(digits=2) %>%
@@ -897,8 +918,13 @@ stopCluster(cl)
 ```{r LeapSPlot}
 ggplot(leapS)+
   ggtitle("Stepwise Selection") +
+  scale_x_continuous( breaks =seq(0, rcvTunes, 2)) + 
+  expand_limits(y = 0.45) +
   theme_minimal()
+```
 
+
+```{r LeapSTable}
 # Regression results
 coef(leapS$finalModel,leapS$bestTune$nvmax)  %>%
   kable(digits=2) %>%
@@ -1228,28 +1254,50 @@ ggplot(varImp(enet)) +
   theme_minimal() 
 ```
 
-## Comparison of Models
-It is now time to compare the models and to select the best one, in terms of lowest RMSE, for all Cross Validated samples. 
+### Comparison of Penalization methods
 
-```{r FinalComparison}
+We can compare the penalization models in terms of lowest RMSE, for all Cross Validated samples. 
+
+```{r PenalComparison}
 models <- list( lm = lm, cp = lmcp, forward = leapF, 
                 backward = leapB, stepwise = leapS, 
-                ridge = ridge, lasso = lasso)
+                ridge = ridge, lasso = lasso, enet = enet)
 perf <- resamples(models)
-colvec <- c('#fbb4ae','#b3cde3','#ccebc5','#decbe4','#fed9a6','#ffffcc', SIAP.color)
-boxplot(perf$values[c("lm~RMSE", "cp~RMSE", 
-                      "forward~RMSE", "backward~RMSE", 
-                      "stepwise~RMSE", "ridge~RMSE", "lasso~RMSE")],
+colvec <- c('#ffffcc', SIAP.color, "pink")
+boxplot(perf$values[c("ridge~RMSE", "lasso~RMSE", "enet~RMSE")],
         #names = names(models),
-        names = c("lm", "Cp", "forwd", "backwd", "step", "ridge", "lasso"),
+        names = c( "ridge", "lasso", "elastic net"),
         col=colvec,horizontal = FALSE,
         ylab="RMSE",
         frame.plot = FALSE)
 ``` 
 
-Lasso is good. $C_p$ is doing almost the same job with less variables. 
+Lasso and elastic net seems to perform better than ridge regression, with almost the same set of  variables. 
 
 # Wrap-up
+
+## Comparison of ALL Models
+It is now time to compare the models and to select the best one, in terms of lowest RMSE, for all Cross Validated samples. 
+
+```{r FinalComparison}
+models <- list( lm = lm, cp = lmcp, forward = leapF, 
+                backward = leapB, stepwise = leapS, 
+                ridge = ridge, lasso = lasso, enet= enet)
+perf <- resamples(models)
+colvec <- c('#fbb4ae','#b3cde3','#ccebc5','#decbe4','#fed9a6','#ffffcc', SIAP.color,"pink")
+boxplot(perf$values[c("lm~RMSE", "cp~RMSE", 
+                      "forward~RMSE", "backward~RMSE", 
+                      "stepwise~RMSE", "ridge~RMSE", "lasso~RMSE", "enet~RMSE")],
+        #names = names(models),
+        names = c("lm", "Cp", "forwd", "backwd", "step", "ridge", "lasso", "e-net"),
+        col=colvec,horizontal = FALSE,
+        ylab="RMSE",
+        frame.plot = FALSE)
+``` 
+
+In this example, it seems that penalization methods performed quite well, even with a large number of variables.  $C_p$ is doing almost the same job with less variables. 
+
+## Take aways
 
 - In linear regression, scaling allows to compare coefficients and to measure variable importance.
 - Multicollinearity should be investigated beforehand. 
