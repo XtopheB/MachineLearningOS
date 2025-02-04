@@ -8,6 +8,7 @@ output:
   html_document:
     df_print: paged
     toc: true
+    toc_float: true
     keep_md: true
     code_folding: show
     fig_width: 6.5
@@ -210,7 +211,9 @@ PlotGrid <- function(pred,title) {
 
 
 
-# Examples of Classifiers
+
+### Parameters
+All over this exercise, we will use the same sets of parameters consistently. This includes the parameters that will ensure reproducibility by specifying the seeds used in the random number generation. 
 
 ```{r Setseeds, echo=FALSE}
 # function to set up random seeds
@@ -242,11 +245,22 @@ setSeeds <- function(method = "cv",
 }
 ```
 
+
 ```{r sixtats}
+# A function that recalls always the same 6 statistics 
 sixStats <- function(...) c(twoClassSummary(...), 
                             defaultSummary(...))
 ```
 
+
+The parameters specific to training the Machine Learning models are recorded in the object `ctrl`
+
+- **number** = K: Defines the number of folds in k-fold cross-validation.
+If K = 5, the data set is split into 5 subsets; 4 are used for training, and 1 is used for validation (80-20 rule). We repeat K-times
+
+- **repeats**: Specifies how many times the k-fold cross-validation should be repeated (sometimes named **m**)
+
+In total we'll have $k \times m$ (train-validation) samples
 
 ```{r controls}
 # control variables (see later)
@@ -254,7 +268,7 @@ K <- 5
 repeats <- 10
 rcvTunes <- 1 # tune number of models
 seed <- 123
-# repeated cross validation
+# For repeated cross validation, we use the function setSeeds created above
 rcvSeeds <- setSeeds(method = "repeatedcv", 
                      numbers = K, repeats = repeats,
                      tunes = rcvTunes, seed = seed)
@@ -273,6 +287,7 @@ TrControl <- trainControl(method = "none",
 ```
 
 
+# Examples of Classifiers
 
 ## Logit as You Don't Know It
 
@@ -558,8 +573,6 @@ $$ Acuracy = \frac{True Positives + True Negatives}{ True Positives + True Negat
 $$
 
 
-
-
 ### Limitations of Accuracy
 As mentioned before accuracy does not work as well when there is heavy imbalance between classes. If 90% of the data corresponds to one class, then you can reach 90% accuracy by simply guessing that class for all observations in the data. **Accuracy** also does not give information about what type of mistake you are making, which can be important if one mistake is more costly to make than the other.
 
@@ -818,7 +831,7 @@ CV_{validation} = \frac{1}{n_{validation}} \sum_{j \in validation}{ 1 \left(y_{j
 
 
 ```{r}
-# control variables 
+# New control variables including a search on different models 
 K <- 5
 repeats <- 10
 rcvTunes <- 1 # tune number of models
