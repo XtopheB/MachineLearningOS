@@ -3,6 +3,7 @@ title: "Supervized Classification"
 author: "Christophe Bontemps & Patrick Jonsson - SIAP^[*This document uses teaching
   materials developped by Pascal Lavergne* (*Toulouse School of Economics*)]"
 subtitle: "Workshop on Machine Learning for Official Statistics in Asia-Pacific"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     df_print: paged
