@@ -8,6 +8,7 @@ output:
   html_document:
     df_print: paged
     toc: yes
+    toc_float: true
     keep_md: yes
     code_folding: show
     fig_width: 6.5
@@ -140,11 +141,28 @@ Before we start we can visualize the distribution of our target variable *Before
 ggplot(ChildMarriage) + geom_bar(aes(y = Before15), colour="white", fill = SIAP.color) +
   theme_minimal() + 
   theme(plot.title = element_text(hjust = 0.5))+ 
-  labs(x = "", y = "") +
+  labs(x = "", y = "child marriage") +
   ggtitle("Marriage before 15 ")
 ```
 
 As we recall from before there is some class imbalance in the target variable *Before15* that we need to keep in mind.  
+
+
+```{r fig.height=2, fig.width= 8}
+ggplot(train_data) + geom_bar(aes(y = Before15), colour="white", fill = SIAP.color) +
+  theme_minimal() + 
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  labs(x = "", y = "child marriage") +
+  ggtitle("Marriage before 15 - train ")
+```
+
+```{r fig.height=2, fig.width= 8}
+ggplot(validation_data) + geom_bar(aes(y = Before15), colour="white", fill = SIAP.color) +
+  theme_minimal() + 
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  labs(x = "", y = "child marriage") +
+  ggtitle("Marriage before 15 - validation ")
+```
 
 ## Train and Validation data sets
 
