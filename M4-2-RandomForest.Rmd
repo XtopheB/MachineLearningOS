@@ -145,8 +145,22 @@ ggplot(ChildMarriage) + geom_bar(aes(y = Before15), colour="white", fill = SIAP.
   ggtitle("Marriage before 15 ")
 ```
 
-As we recall from before there is some class imbalance in the target variable *Before15* that we need to keep in mind.  
+As we recall from before there is some class imbalance in the target variable *Before15* that we need to keep in mind. 
 
+## Train and Validation data sets
+
+```{r }
+# Splits data into training and testing sets
+set.seed(777)
+trainIndex <- createDataPartition(ChildMarriage$Before15, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+train_data <- ChildMarriage[ trainIndex,]
+validation_data  <- ChildMarriage[-trainIndex,]
+
+```
+
+It is important to check if the distribution of the the variable of interest (*Before15*) is the same in the training and the validation (test) data sets. 
 
 ```{r fig.height=2, fig.width= 8}
 ggplot(train_data) + geom_bar(aes(y = Before15), colour="white", fill = SIAP.color) +
@@ -162,19 +176,6 @@ ggplot(validation_data) + geom_bar(aes(y = Before15), colour="white", fill = SIA
   theme(plot.title = element_text(hjust = 0.5))+ 
   labs(x = "", y = "child marriage") +
   ggtitle("Marriage before 15 - validation ")
-```
-
-## Train and Validation data sets
-
-```{r }
-# Splits data into training and testing sets
-set.seed(777)
-trainIndex <- createDataPartition(ChildMarriage$Before15, p = .8, 
-                                  list = FALSE, 
-                                  times = 1)
-train_data <- ChildMarriage[ trainIndex,]
-validation_data  <- ChildMarriage[-trainIndex,]
-
 ```
 
 # Random Forest
@@ -207,7 +208,6 @@ setSeeds <- function(method = "cv", numbers = 1, repeats = 1, tunes = NULL, seed
 }
 
 ```
-
 
 
 ```{r, include = FALSE}
@@ -294,11 +294,14 @@ $\hookrightarrow$  *decrease* the variance
 > A trick is to begin to optimize the random forest on our training process first. 
 This may end up saving us a lot of training time. 
 
-We therefore begin by tuning the **number of possible variables** considered at each split in a decision tree by tuning the *mtry* hyperparameter. We do a grid search and compute the accuracy for each value of *mtry* $\in \{0,8\}$.
+We therefore begin by tuning the **number of possible variables** considered at each split in a decision tree by tuning the *mtry* hyperparameter. We do a grid search and compute the accuracy for each value of *mtry* in a suitable interval ($\in \{0,8\}$ here). Note that this grid search should be limited if the number of variables is lower than 8!
+
 
 ```{r, cache = TRUE}
 # /!\ running this chunk can be long!
-tunegrid <- expand.grid(.mtry = (1:8)) 
+# Defining the grid search on mtry
+# NB: We limit the grid search to the number of explanatory variables 
+tunegrid <- expand.grid(.mtry = (1:ncol(train_data)-1)) 
 
 rf_gridsearch <- train(Before15 ~ ., 
                        data = train_data,
