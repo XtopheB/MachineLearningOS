@@ -4,14 +4,14 @@ subtitle: "Workshop on Machine Learning for Official Statistics"
 author: "Your Name (Your Institution)"
 date: "`r Sys.Date()`"
 output:
+  word_document:
+    toc: no
   html_document:
     toc: yes
     toc_float: true
     code_folding: hide
   pdf_document:
     toc: yes
-  word_document:
-    toc: no
 ---
 
 
